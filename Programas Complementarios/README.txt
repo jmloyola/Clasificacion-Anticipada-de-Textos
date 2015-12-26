@@ -1,0 +1,1 @@
+En este directorio se encuentra aquellos programa utilizados de forma complementaria para poder llevar a cabo la tesis.

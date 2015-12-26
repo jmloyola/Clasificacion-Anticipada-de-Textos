@@ -1,0 +1,2 @@
+>> Los dataset webkb-train-stemmed y webkb-test-stemmed tienen documentos sin contenido !!!! WTF
+>> Los documentos de los dataset r8-train-all-terms y r8-test-all-terms todos terminan con un espacio en blanco.
