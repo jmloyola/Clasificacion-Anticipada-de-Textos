@@ -1,24 +1,32 @@
 clear all; close all; clc;
 
 
-%%% download the files below from the website:
-% http://web.ist.utl.pt/acardoso/datasets/
+%% Obtengo informacion para ubicar el dataset y abro el archivo donde se encuentra el dataset.
+% Obtengo el directorio actual sobre el que se esta corriendo el script.
+directorioActual = pwd;
+
+
+%% Selecciono el dataset con el que trabajare
+% fname es el nombre del dataset para entrenamiento.
+% fnamet es el nombre del dataset para test.
 % fname='webkb-train-stemmed.txt';
 % fnamete='webkb-test-stemmed.txt';
-%fname='r8-train-all-terms.txt'
-%fnamete='r8-test-all-terms.txt'
+% fname='r8-train-all-terms.txt'
+% fnamete='r8-test-all-terms.txt'
 % fname='20ng-train-stemmed.txt';
 % fnamete='20ng-test-stemmed.txt';
 fname='r8-train-all-terms-clean.txt'
 fnamete='r8-test-all-terms-clean.txt'
 
-%% folder where the above files are stored
-datadir='C:\Users\Juan Martin\Desktop\Codigo Piloto\';
+%% Lugar donde se encuentran los datasets
+datadir='C:\Users\Juan Martin\Documents\GitHub\Clasificacion-Anticipada-de-Textos\Datasets\Dataset Paper\';
 
-%% temporal directory to copy files 
-tempodir='C:\Users\Juan Martin\Desktop\Codigo Piloto\temp\';
+%% Lugar donde se almacenan los archivos temporales
+tempodir='C:\Users\Juan Martin\Documents\GitHub\Clasificacion-Anticipada-de-Textos\Codigo Piloto\temp\';
+
 %% copy files to temporal directory with informative filenames
-%system(['del ' tempodir '*.txt'])
+% Primero elimino todos los archivos que se encontraban antes en el
+% directorio temporal.
 delete([tempodir '*.txt']);
 
 % trabaja con el archivo de entrenamiento
@@ -51,7 +59,7 @@ end
 
 clear S clax;
 
-%%% indexing using the TMG toolbox
+%% Indexo utilizan el toolbox TMG
 OPTIONS.min_length=3;
 OPTIONS.min_local_freq=1;
 OPTIONS.min_global_freq=1;
@@ -65,7 +73,7 @@ OPTIONS.normalization='x';
 [B, DICTIONARY, GLOBAL_WEIGHTS, NORMALIZATION_FACTORS, ...
         WORDS_PER_DOC,TITLES, FILES, UPDATE_STRUCT] = tmg([tempodir],OPTIONS);        
 
-
+%% Limpio el diccionario
 for i=1:size(DICTIONARY,1),
     DicC{i}=strrep(DICTIONARY(i,:),' ','');
     % NOTA: Hace esto ya que el diccionario es un arreglo donde se
@@ -76,6 +84,8 @@ for i=1:size(DICTIONARY,1),
 end
 clear DICTIONARY;
 
+
+%% Obtengo informacion secuencial
 % Recordar que la matriz B es la que tiene para cada documento la medida tf
 % de cada termino. Las filas representan terminos y las columnas
 % documentos.
@@ -84,7 +94,6 @@ clear DICTIONARY;
 % termino que mayor valor de cada documento.
 seqinf=sparse(size(B,2),max(max(B)));
 
-
 % >>> VER <<< 
 % Se supone que el tamanio de titles es igual a la cantidad
 % de documentos de entrenamiento mas la cantidad de documentos de test?
@@ -92,7 +101,6 @@ seqinf=sparse(size(B,2),max(max(B)));
 % ejemplo tengo 5485 documentos de entrenamiento, 2189 de test (cuya suma
 % es 7674) pero la dimension de titles es 7669.
 
-%% get sequential data
 for i=1:length(TITLES),
     cad=TITLES{i};
     idx1=strfind(cad,'/');

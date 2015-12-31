@@ -12,13 +12,13 @@ for i=1:length(classex),
     YTones(find(Ytest==classex(i)),i)=1;
 end
 
-%% train Naive Bayes classifier
+%% Entreno el clasificador Naive Bayes
 [NB] = MNNaiveBayes(Xtrain,Ytrain,1,[]);
 
-%% Perform sequential/incremental predictions
-%ventanas = 1:1:260;
-%ventanas(end+1) = size(sTest,2); %%% VER SI ESTA BIEN. INTENTO OBTENER LA CANTIDAD DE TERMINOS DEL DOCUMENTO MAS LARGO.
-ventanas = 1:1:50;
+%% Realizo las predicciones incrementales (ventana a ventana)
+ventanas = 1:1:260;
+ventanas(end+1) = size(sTest,2); %%% VER SI ESTA BIEN. INTENTO OBTENER LA CANTIDAD DE TERMINOS DEL DOCUMENTO MAS LARGO.
+%ventanas = 1:1:50;
 
 infoDocumentosParciales = cell(size(Xtest,1), length(ventanas)+1); % Se suma uno para considerar la ultima ventana que tiene el final de los documentos que aun no han terminado de ser leidos.
 indiceVentanas = zeros(size(Xtest,1), length(ventanas)+1);
@@ -32,7 +32,7 @@ for j=1:length(ventanas),
     j
     close all;
     rXtest=sparse(size(Xtest,1),size(Xtest,2));
-    %% simulate a reduced attribute set
+    %% Simulo el conjunto de atributos disminuidos
     for i=1:size(Xtest,1),        
         noz=length(find(sTest(i,:)~=0));
         if (noz <= ventanas(j))
@@ -63,7 +63,7 @@ for j=1:length(ventanas),
     end
     Xtestv=rXtest;
     
-    %% classify with Naive Bayes and estimate performance
+    %% Clasifico con Naive Bayes y estimo la performance 
     [NB0] = MNNaiveBayes(Xtestv,[],0,NB);
     
     for i=1:size(Xtest,1)
