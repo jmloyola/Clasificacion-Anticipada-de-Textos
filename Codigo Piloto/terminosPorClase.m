@@ -29,6 +29,6 @@ end
 
 nombreterminosPorClase = [nombreDataset '_TerminosPorClase.mat'];
 
-save nombreterminosPorClase indicesTerminosMasFrecPorClase dicPorClase
+save(nombreterminosPorClase, 'indicesTerminosMasFrecPorClase', 'dicPorClase');
 
 cd(directorioActual);

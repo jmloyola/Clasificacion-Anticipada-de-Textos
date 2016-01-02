@@ -146,7 +146,7 @@ cd(directorioVariablesWorkspace);
 
 nombreDiccionario = [nombreDataset '_Dic.mat'];
 
-save nombreDiccionario 'DicC'
+save(nombreDiccionario, 'DicC');
 clear DicC
 
 X=B';
@@ -185,6 +185,6 @@ nYtest=Y(find(istraining==0));
 
 nombreMatrices = [nombreDataset '_Matrices.mat'];
 
-save nombreMatrices Xtrain Xtest Ytrain Ytest seqinf sTest sTrain
+save(nombreMatrices, 'Xtrain', 'Xtest', 'Ytrain', 'Ytest', 'seqinf', 'sTest', 'sTrain');
 
 cd(directorioActual);

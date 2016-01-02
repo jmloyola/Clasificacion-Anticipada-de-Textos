@@ -25,6 +25,6 @@ end
 
 nombreBlackWords = [nombreDataset '_BlackWords.mat'];
 
-save nombreBlackWords blackList;
+save(nombreBlackWords, 'blackList');
 
 cd(directorioActual);
