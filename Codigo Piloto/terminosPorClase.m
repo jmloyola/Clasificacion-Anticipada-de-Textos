@@ -8,7 +8,7 @@ cd(directorioVariablesWorkspace);
 
 nombreMatrices = [nombreDataset '_Matrices.mat'];
 
-load nombreMatrices Ytrain seqinf
+load(nombreMatrices, 'Ytrain', 'seqinf');
 
 cantidadClases = length(unique(Ytrain));
 for i= 1:cantidadClases

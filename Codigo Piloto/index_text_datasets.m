@@ -8,10 +8,16 @@ directorioActual = pwd;
 load configuracion.mat
 
 %% Lugar donde se encuentran los datasets
-datadir = 'C:\Users\Juan Martin\Documents\GitHub\Clasificacion-Anticipada-de-Textos\Datasets\Dataset Paper\';
+datadir = 'C:\Users\Juan Martin\Documents\GitHub\Clasificacion-Anticipada-de-Textos\Datasets\';
 
 %% Lugar donde se almacenan los archivos temporales
 tempodir = [directorioActual '\temp\'];
+
+%% Creo el directorio temporal
+% Controlo si existe el directorio. Si no existe creo la carpeta.
+if (exist(tempodir, 'dir') ~= 7)
+    mkdir(tempodir);
+end
 
 %% copy files to temporal directory with informative filenames
 % Primero elimino todos los archivos que se encontraban antes en el

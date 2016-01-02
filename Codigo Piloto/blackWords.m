@@ -9,7 +9,7 @@ cd(directorioVariablesWorkspace);
 
 nombreDiccionario = [nombreDataset '_Dic.mat'];
 
-load nombreDiccionario
+load(nombreDiccionario);
 
 blackList = [];
 if (strcmp(nombreDataset,'r8-all-terms-cleans'))

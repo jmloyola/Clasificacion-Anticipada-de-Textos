@@ -7,13 +7,13 @@ directorioVariablesWorkspace = [directorioActual '\Variables del Workspace\' nom
 cd(directorioVariablesWorkspace);
 
 nombreMatrices = [nombreDataset '_Matrices.mat'];
-load nombreMatrices
+load(nombreMatrices);
 
 nombreBlackWords = [nombreDataset '_BlackWords.mat'];
-load nombreBlackWords blackList
+load(nombreBlackWords, 'blackList');
 
 nombreterminosPorClase = [nombreDataset '_TerminosPorClase.mat'];
-load nombreterminosPorClase indicesTerminosMasFrecPorClase
+load(nombreterminosPorClase, 'indicesTerminosMasFrecPorClase');
 
 classex=unique(Ytrain);
 Yones=-ones(size(Ytrain,1),length(classex));
@@ -31,7 +31,7 @@ cd(directorioActual);
 [NB] = MNNaiveBayes(Xtrain,Ytrain,1,[]);
 
 %% Realizo las predicciones incrementales (ventana a ventana)
-ventanas = 1:1:260;
+ventanas = 1:5:260;
 ventanas(end+1) = size(sTest,2); %%% VER SI ESTA BIEN. INTENTO OBTENER LA CANTIDAD DE TERMINOS DEL DOCUMENTO MAS LARGO.
 %ventanas = 1:1:50;
 
@@ -99,7 +99,7 @@ for j=1:length(ventanas),
     %plot((ventanas(1:j)),lasefesnbm','LineWidth',2,'MarkerSize',10); %% plots f_1 measure
 	%plot((ventanas(1:j)),accNBMM','LineWidth',2,'MarkerSize',10); %% plots accuracy
     plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',2,'MarkerSize',10);
-    legend('Macro F1', 'Accuracy');
+    legend('Macro F1', 'Accuracy', 'Location', 'southeast');
     set(gca,'FontSize',14);
     xlabel('Cantidad de Terminos Leidos');
 	%ylabel('Accuracy');
