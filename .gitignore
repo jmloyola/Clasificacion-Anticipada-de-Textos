@@ -1,4 +1,6 @@
 /Codigo Piloto/temp/
-*.tmp
+/Codigo Piloto/Variables del Workspace/
+/Codigo Piloto/Figuras
 tmg.log
+*.tmp
 *.mat
