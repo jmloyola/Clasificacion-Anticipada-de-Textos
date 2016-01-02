@@ -41,4 +41,3 @@ function [ npTotal, npDistintas, npBlackList, npMasFrecuentesCadaClase ] = infor
         npMasFrecuentesCadaClase = [];
     end
 end
-

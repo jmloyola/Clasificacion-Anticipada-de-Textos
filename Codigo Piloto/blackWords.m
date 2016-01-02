@@ -1,12 +1,18 @@
 %% Creo la lista blackWords.
 clear all; close all; clc;
 
-load R8_DicC.mat
+directorioActual = pwd;
+load configuracion.mat
 
-fname = 'r8-train-all-terms-clean.txt'; % Se llama flojera.. jeje despues arreglar.
+directorioVariablesWorkspace = [directorioActual '\Variables del Workspace\' nombreDataset];
+cd(directorioVariablesWorkspace);
+
+nombreDiccionario = [nombreDataset '_Dic.mat'];
+
+load nombreDiccionario
 
 blackList = [];
-if (strcmp(fname,'r8-train-all-terms-clean.txt'))
+if (strcmp(nombreDataset,'r8-all-terms-cleans'))
     [~,indiceEnElDiccionario]=ismember('the',DicC);
     blackList(1) = indiceEnElDiccionario;
     
@@ -17,4 +23,8 @@ if (strcmp(fname,'r8-train-all-terms-clean.txt'))
     blackList(3) = indiceEnElDiccionario;
 end
 
-save R8_BlackWords.mat blackList;
+nombreBlackWords = [nombreDataset '_BlackWords.mat'];
+
+save nombreBlackWords blackList;
+
+cd(directorioActual);

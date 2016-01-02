@@ -5,24 +5,13 @@ clear all; close all; clc;
 % Obtengo el directorio actual sobre el que se esta corriendo el script.
 directorioActual = pwd;
 
-
-%% Selecciono el dataset con el que trabajare
-% fname es el nombre del dataset para entrenamiento.
-% fnamet es el nombre del dataset para test.
-% fname='webkb-train-stemmed.txt';
-% fnamete='webkb-test-stemmed.txt';
-% fname='r8-train-all-terms.txt'
-% fnamete='r8-test-all-terms.txt'
-% fname='20ng-train-stemmed.txt';
-% fnamete='20ng-test-stemmed.txt';
-fname='r8-train-all-terms-clean.txt'
-fnamete='r8-test-all-terms-clean.txt'
+load configuracion.mat
 
 %% Lugar donde se encuentran los datasets
-datadir='C:\Users\Juan Martin\Documents\GitHub\Clasificacion-Anticipada-de-Textos\Datasets\Dataset Paper\';
+datadir = 'C:\Users\Juan Martin\Documents\GitHub\Clasificacion-Anticipada-de-Textos\Datasets\Dataset Paper\';
 
 %% Lugar donde se almacenan los archivos temporales
-tempodir='C:\Users\Juan Martin\Documents\GitHub\Clasificacion-Anticipada-de-Textos\Codigo Piloto\temp\';
+tempodir = [directorioActual '\temp\'];
 
 %% copy files to temporal directory with informative filenames
 % Primero elimino todos los archivos que se encontraban antes en el
@@ -30,7 +19,7 @@ tempodir='C:\Users\Juan Martin\Documents\GitHub\Clasificacion-Anticipada-de-Text
 delete([tempodir '*.txt']);
 
 % trabaja con el archivo de entrenamiento
-S=file2str([datadir fname]);
+S=file2str([datadir datasetEntrenamiento]);
 
 % Crea los archivos temporales, donde cada uno es un documento que se le ha
 % quitado la clase. El nombre es una combinacion de la clase, la fecha de
@@ -45,7 +34,7 @@ end
 dc=i+1;
 
 % trabaja con el archivo de test
-S=file2str([datadir fnamete]); % Notar que aqui NO se anexa a lo que ya tenia S, los valores viejos se pierden.
+S=file2str([datadir datasetTest]); % Notar que aqui NO se anexa a lo que ya tenia S, los valores viejos se pierden.
 
 for i=1:length(S),
 	% >>> VER <<<
@@ -146,7 +135,18 @@ for i=1:length(TITLES),
     clear seqdoc;
 end
 
-save 'R8_DicC.mat' 'DicC'
+
+%% Creo el directorio donde almacenar las variables y guardo algunas interesantes en archivos con formato '.mat'. Luego elimino las variables para ahorrar espacio.
+directorioVariablesWorkspace = [directorioActual '\Variables del Workspace\' nombreDataset];
+% Controlo si existe el directorio. Si no existe creo la carpeta.
+if (exist(directorioVariablesWorkspace, 'dir') ~= 7)
+    mkdir(directorioVariablesWorkspace);
+end
+cd(directorioVariablesWorkspace);
+
+nombreDiccionario = [nombreDataset '_Dic.mat'];
+
+save nombreDiccionario 'DicC'
 clear DicC
 
 X=B';
@@ -183,4 +183,8 @@ nYtrain=Y(find(istraining==1));
 nXtest=nX(find(istraining==0),:);
 nYtest=Y(find(istraining==0));
 
-save R8_seq_emnlp_FullVoc.mat Xtrain Xtest Ytrain Ytest seqinf sTest sTrain
+nombreMatrices = [nombreDataset '_Matrices.mat'];
+
+save nombreMatrices Xtrain Xtest Ytrain Ytest seqinf sTest sTrain
+
+cd(directorioActual);

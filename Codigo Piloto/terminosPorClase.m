@@ -1,6 +1,14 @@
 clear all; close all; clc;
 
-load R8_seq_emnlp_FullVoc.mat Ytrain seqinf
+load configuracion.mat
+
+directorioActual = pwd;
+directorioVariablesWorkspace = [directorioActual '\Variables del Workspace\' nombreDataset];
+cd(directorioVariablesWorkspace);
+
+nombreMatrices = [nombreDataset '_Matrices.mat'];
+
+load nombreMatrices Ytrain seqinf
 
 cantidadClases = length(unique(Ytrain));
 for i= 1:cantidadClases
@@ -19,4 +27,8 @@ for i= 1:cantidadClases
     indicesTerminosMasFrecPorClase{i} = indicesValores(end-24 : end);
 end
 
-save terminosPorClase.mat indicesTerminosMasFrecPorClase dicPorClase
+nombreterminosPorClase = [nombreDataset '_TerminosPorClase.mat'];
+
+save nombreterminosPorClase indicesTerminosMasFrecPorClase dicPorClase
+
+cd(directorioActual);
