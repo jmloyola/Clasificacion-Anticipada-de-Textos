@@ -156,3 +156,5 @@ cd(directorioVariablesWorkspace);
 nombreArchivoSalida = [nombreDataset '_InfoDocumentosParciales.mat'];
 % La variable NB tiene la informacion de Naive Bayes para el entrenamiento.
 save(nombreArchivoSalida, 'infoDocumentosParciales', 'indiceVentanas', 'NB', 'probCadaClase', 'README');
+
+cd(directorioActual);
