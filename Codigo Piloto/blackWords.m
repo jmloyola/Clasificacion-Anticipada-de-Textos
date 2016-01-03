@@ -28,3 +28,5 @@ nombreBlackWords = [nombreDataset '_BlackWords.mat'];
 save(nombreBlackWords, 'blackList');
 
 cd(directorioActual);
+
+disp('El programa finalizo exitosamente');

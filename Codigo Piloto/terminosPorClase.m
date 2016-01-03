@@ -32,3 +32,5 @@ nombreterminosPorClase = [nombreDataset '_TerminosPorClase.mat'];
 save(nombreterminosPorClase, 'indicesTerminosMasFrecPorClase', 'dicPorClase');
 
 cd(directorioActual);
+
+disp('El programa finalizo exitosamente');

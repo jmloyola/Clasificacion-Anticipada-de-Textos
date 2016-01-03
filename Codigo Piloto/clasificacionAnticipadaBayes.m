@@ -31,13 +31,14 @@ cd(directorioActual);
 [NB] = MNNaiveBayes(Xtrain,Ytrain,1,[]);
 
 %% Realizo las predicciones incrementales (ventana a ventana)
-ventanas = 1:5:260;
-ventanas(end+1) = size(sTest,2); %%% VER SI ESTA BIEN. INTENTO OBTENER LA CANTIDAD DE TERMINOS DEL DOCUMENTO MAS LARGO.
-%ventanas = 1:1:50;
+tamanioVentana = 5;
+ventanas = 1:tamanioVentana:250;
+ventanas(end+1) = cantidadMaximaTerminosTest; %%% VER SI ESTA BIEN. INTENTO OBTENER LA CANTIDAD DE TERMINOS DEL DOCUMENTO MAS LARGO.
+%ventanas = 1:tamanioVentana:size(sTest,2);
 
-infoDocumentosParciales = cell(size(Xtest,1), length(ventanas)+1); % Se suma uno para considerar la ultima ventana que tiene el final de los documentos que aun no han terminado de ser leidos.
-indiceVentanas = zeros(size(Xtest,1), length(ventanas)+1);
-probCadaClase = cell(size(Xtest,1), length(ventanas)+1);
+infoDocumentosParciales = cell(size(Xtest,1), length(ventanas));
+indiceVentanas = zeros(size(Xtest,1), length(ventanas));
+probCadaClase = cell(size(Xtest,1), length(ventanas));
 
 
 for j=1:length(ventanas),
@@ -70,7 +71,7 @@ for j=1:length(ventanas),
                 myox=myox+1;
             end
             wdix=wdix+1;
-        end        
+        end
         rXtest(i,:)=freqtsof;
     end
     Xtestv=rXtest;
@@ -136,10 +137,10 @@ if (exist([directorioFiguras '\Png'], 'dir') ~= 7)
 end
 
 % Guardo la figura en disco.
-nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_MacroF1Precision'];
-nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_MacroF1Precision'];
-nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_MacroF1Precision'];
-nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_MacroF1Precision'];
+nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_MacroF1Precision_Ventana' num2str(tamanioVentana)];
+nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_MacroF1Precision_Ventana' num2str(tamanioVentana)];
+nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_MacroF1Precision_Ventana' num2str(tamanioVentana)];
+nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_MacroF1Precision_Ventana' num2str(tamanioVentana)];
 saveas(f, nombreFiguraFig, 'fig');
 saveas(f, nombreFiguraSvg, 'svg');
 saveas(f, nombreFiguraEps, 'epsc'); % Guarda la figura en formato eps color.
@@ -158,3 +159,5 @@ nombreArchivoSalida = [nombreDataset '_InfoDocumentosParciales.mat'];
 save(nombreArchivoSalida, 'infoDocumentosParciales', 'indiceVentanas', 'NB', 'probCadaClase', 'README');
 
 cd(directorioActual);
+
+disp('El programa finalizo exitosamente');

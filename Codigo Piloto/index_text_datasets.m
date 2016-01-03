@@ -24,6 +24,16 @@ end
 % directorio temporal.
 delete([tempodir '*.txt']);
 
+
+indicesGuiones = strfind(nombreDataset, '-');
+
+datasetEntrenamiento = nombreDataset(1 : indicesGuiones(1)-1);
+datasetEntrenamiento = [datasetEntrenamiento '-train-' nombreDataset(indicesGuiones(1)+1 : end) '.txt'];
+
+datasetTest = nombreDataset(1 : indicesGuiones(1)-1);
+datasetTest = [datasetTest '-test-' nombreDataset(indicesGuiones(1)+1 : end) '.txt'];
+
+
 % trabaja con el archivo de entrenamiento
 S=file2str([datadir datasetEntrenamiento]);
 
@@ -189,8 +199,16 @@ nYtrain=Y(find(istraining==1));
 nXtest=nX(find(istraining==0),:);
 nYtest=Y(find(istraining==0));
 
+cantTerminos = zeros(size(sTest,1), 1);
+for i=1:size(sTest,1),
+    cantTerminos(i)=length(find(sTrain(i,:)~=0));
+end
+cantidadMaximaTerminosTest = max(cantTerminos);
+
 nombreMatrices = [nombreDataset '_Matrices.mat'];
 
-save(nombreMatrices, 'Xtrain', 'Xtest', 'Ytrain', 'Ytest', 'seqinf', 'sTest', 'sTrain');
+save(nombreMatrices, 'Xtrain', 'Xtest', 'Ytrain', 'Ytest', 'seqinf', 'sTest', 'sTrain', 'cantidadMaximaTerminosTest');
 
 cd(directorioActual);
+
+disp('El programa finalizo exitosamente');
