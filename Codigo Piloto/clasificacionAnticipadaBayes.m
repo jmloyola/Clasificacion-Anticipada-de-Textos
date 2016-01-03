@@ -32,7 +32,7 @@ cd(directorioActual);
 
 %% Realizo las predicciones incrementales (ventana a ventana)
 tamanioVentana = 5;
-ventanas = 1:tamanioVentana:250;
+ventanas = 1:tamanioVentana:600;
 ventanas(end+1) = cantidadMaximaTerminosTest; %%% VER SI ESTA BIEN. INTENTO OBTENER LA CANTIDAD DE TERMINOS DEL DOCUMENTO MAS LARGO.
 %ventanas = 1:tamanioVentana:size(sTest,2);
 
@@ -100,6 +100,10 @@ for j=1:length(ventanas),
     %plot((ventanas(1:j)),lasefesnbm','LineWidth',2,'MarkerSize',10); %% plots f_1 measure
 	%plot((ventanas(1:j)),accNBMM','LineWidth',2,'MarkerSize',10); %% plots accuracy
     plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',2,'MarkerSize',10);
+    % Coloco el titulo a la figura. Notar que se usa cell, de esta forma creo
+    % titulos con mas de una linea.
+    titulo = {'Clasificacion Anticipada en el dataset'; nombreDataset};
+    title(titulo);
     legend('Macro F1', 'Accuracy', 'Location', 'southeast');
     set(gca,'FontSize',14);
     xlabel('Cantidad de Terminos Leidos');
