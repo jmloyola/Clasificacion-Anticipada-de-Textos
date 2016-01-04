@@ -32,7 +32,7 @@ cd(directorioActual);
 
 %% Realizo las predicciones incrementales (ventana a ventana)
 tamanioVentana = 5;
-ventanas = 1:tamanioVentana:600;
+ventanas = 1:tamanioVentana:250;
 ventanas(end+1) = cantidadMaximaTerminosTest; %%% VER SI ESTA BIEN. INTENTO OBTENER LA CANTIDAD DE TERMINOS DEL DOCUMENTO MAS LARGO.
 %ventanas = 1:tamanioVentana:size(sTest,2);
 

@@ -6,13 +6,13 @@ clear all; close all; clc
 % nombreDataset = 'r8-all-terms-clean';
 
 %% Dataset para probar
-nombreDataset = 'PRUEBA_r8-no-short-clean';
-% nombreDataset = 'PRUEBA_r8-no-stop-clean';
-% nombreDataset = 'PRUEBA_r8-stemmed';
-% nombreDataset = 'PRUEBA_r52-all-terms-clean';
-% nombreDataset = 'PRUEBA_r52-no-short-clean';
-% nombreDataset = 'PRUEBA_r52-no-stop-clean';
-% nombreDataset = 'PRUEBA_r52-stemmed';
+nombreDataset = 'r8-no-short-clean';
+% nombreDataset = 'r8-no-stop-clean';
+% nombreDataset = 'r8-stemmed';
+% nombreDataset = 'r52-all-terms-clean';
+% nombreDataset = 'r52-no-short-clean';
+% nombreDataset = 'r52-no-stop-clean';
+% nombreDataset = 'r52-stemmed';
 
 save('configuracion.mat', 'nombreDataset');
 
