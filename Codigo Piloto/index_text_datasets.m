@@ -76,7 +76,7 @@ OPTIONS.local_weight='t';
 OPTIONS.normalization='x';
 
 [B, DICTIONARY, GLOBAL_WEIGHTS, NORMALIZATION_FACTORS, ...
-        WORDS_PER_DOC,TITLES, FILES, UPDATE_STRUCT] = tmg([tempodir],OPTIONS);        
+        WORDS_PER_DOC,TITLES, FILES, UPDATE_STRUCT] = tmg([tempodir],OPTIONS);      
 
 %% Limpio el diccionario
 for i=1:size(DICTIONARY,1),
@@ -106,15 +106,30 @@ seqinf=sparse(size(B,2),max(max(B)));
 % ejemplo tengo 5485 documentos de entrenamiento, 2189 de test (cuya suma
 % es 7674) pero la dimension de titles es 7669.
 
+esDatasetComun = size(TITLES{1}, 1) == 1;
+
 for i=1:length(TITLES),
-    cad=TITLES{i};
-    idx1=strfind(cad,'/');
-    idx2=strfind(cad,'_');
-    classex{i}=cad(idx1(1)+1:idx2(1)-1);
-    istraining(i)=isempty(strfind(cad,'test'));    
-    idx0=strfind(cad,'.1');
-    cad=cad(idx0(1)+2:end);
-    idx=strfind(cad,' ');
+    if (esDatasetComun)
+        % Este es el caso esperado.
+        cad = TITLES{i};
+        idx1 = strfind(cad,'/');
+        idx2 = strfind(cad,'_');
+        classex{i} = cad(idx1(1)+1:idx2(1)-1);
+        istraining(i) = isempty(strfind(cad,'test'));
+        idx0 = strfind(cad,'.1');
+        cad = cad(idx0(1)+2:end);
+        idx = strfind(cad,' ');
+    else
+        % Aqui consideramos aquellos dataset donde TITLES{i} es un arreglo
+        % con dos posiciones en lugar de uno.
+        cad = TITLES{i};
+        idx1 = strfind(cad(1,:),'/');
+        idx2 = strfind(cad(1,:),'_');
+        classex{i} = cad(1, (idx1(1)+1):(idx2(1)-1));
+        istraining(i) = isempty(strfind(cad(1,:),'test'));
+        cad = cad(2,:);
+        idx = strfind(cad,' ');
+    end
     
 	% >>> VER <<<
 	% Controlar que efectivamente elimina los espacios en blanco!!!!
