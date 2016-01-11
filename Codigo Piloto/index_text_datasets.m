@@ -115,9 +115,9 @@ for i=1:length(TITLES),
         idx1 = strfind(cad,'/');
         idx2 = strfind(cad,'_');
         classex{i} = cad(idx1(1)+1:idx2(1)-1);
-        istraining(i) = isempty(strfind(cad,'test'));
-        idx0 = strfind(cad,'.1');
-        cad = cad(idx0(1)+2:end);
+        idx0 = strfind(cad,'t.1'); % Agregue la t a 't.1' para el caso en que el numero random empieza con .1
+        istraining(i) = isempty(strfind(cad(1:idx0),'test'));
+        cad = cad(idx0(1)+3:end);
         idx = strfind(cad,' ');
     else
         % Aqui consideramos aquellos dataset donde TITLES{i} es un arreglo
