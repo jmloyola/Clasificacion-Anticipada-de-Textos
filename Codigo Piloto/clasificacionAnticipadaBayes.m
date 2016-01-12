@@ -12,8 +12,8 @@ load(nombreMatrices);
 nombreBlackWords = [nombreDataset '_BlackWords.mat'];
 load(nombreBlackWords, 'blackList');
 
-nombreterminosPorClase = [nombreDataset '_TerminosPorClase.mat'];
-load(nombreterminosPorClase, 'indicesTerminosMasFrecPorClase');
+nombreTerminosPorClase = [nombreDataset '_TerminosPorClase.mat'];
+load(nombreTerminosPorClase, 'indicesTerminosMasFrecPorClase');
 
 classex=unique(Ytrain);
 Yones=-ones(size(Ytrain,1),length(classex));
@@ -102,7 +102,7 @@ for j=1:length(ventanas),
     plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',2,'MarkerSize',10);
     % Coloco el titulo a la figura. Notar que se usa cell, de esta forma creo
     % titulos con mas de una linea.
-    titulo = {'Clasificacion Anticipada en el dataset'; nombreDataset};
+    titulo = {'Clasificacion Anticipada en el Dataset'; nombreDataset};
     title(titulo);
     legend('Macro F1', 'Accuracy', 'Location', 'southeast');
     set(gca,'FontSize',14);
@@ -153,13 +153,15 @@ saveas(f, nombreFiguraPng, 'png');
 
 README{1} = 'En la variable infoDocumentosParciales se encuentra la informacion estatica de cada documento por cada una de las ventanas. Entre la informacion guardada se encuentra: numero de palabras total, numero de palabras sin considerar las que se encuentran en la BlackList, numero de palabras mas frecuentes de cada clase (vector).';
 README{2} = 'En la variable indiceVentanas se encuentran los indices que marcan hasta que punto se lee de cada documento a medida que la cantidad de ventanas aumenta.';
-README{3} = 'En la variable NB se encuentran la informacion del clasificador Naive Bayes a la hora de entrenar.';
-README{4} = 'En la variable probCadaClase se encuentra la probabilidad que tiene cada clase para cada documento para la cantidad de ventenas leidas.';
+README{3} = 'En la variable probCadaClase se encuentra la probabilidad que tiene cada clase para cada documento para la cantidad de ventenas leidas.';
 
 cd(directorioVariablesWorkspace);
 
-nombreArchivoSalida = [nombreDataset '_InfoDocumentosParciales.mat'];
+nombreArchivoSalida = [nombreDataset '_ModeloEntrenado.mat'];
 % La variable NB tiene la informacion de Naive Bayes para el entrenamiento.
+save(nombreArchivoSalida, 'NB');
+
+nombreArchivoSalida = [nombreDataset '_InfoDocumentosParciales.mat'];
 save(nombreArchivoSalida, 'infoDocumentosParciales', 'indiceVentanas', 'NB', 'probCadaClase', 'README');
 
 cd(directorioActual);
