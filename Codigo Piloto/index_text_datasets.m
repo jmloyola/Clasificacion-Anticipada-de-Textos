@@ -40,11 +40,12 @@ S=file2str([datadir datasetEntrenamiento]);
 % Crea los archivos temporales, donde cada uno es un documento que se le ha
 % quitado la clase. El nombre es una combinacion de la clase, la fecha de
 % indexacion y un numero random
+numeroDocumento = 1;
 for i=1:length(S),
     idx=strfind(S{i},sprintf('\t')); % En la variable idx almaceno las posiciones en el documento 'i' que encuentro un caracter '\t'
     clax{i}=S{i}(1:idx(1)-1); % En la variable clax (en la posicion 'i') guardo la clase a la que pertenece el documento de la linea 'i'
-    filesname{i}=[strrep(strrep(datestr(now),':',''),' ','') '_' num2str(rand) '.txt']; % Forma parte del nombre de los archivos temporales que va creando. Inserta la fecha actual y un numero random, quitando los espacios en blanco y separando la fecha del numero con un caracter '_'
-    str2file({S{i}(idx+1:end)},[tempodir clax{i} '_' filesname{i}]); % Forma el path y el nombre completo de los archivos temporales.        
+    str2file({S{i}(idx+1:end)},[tempodir clax{i} '_' num2str(numeroDocumento) '.txt']); % Forma el path y el nombre completo de los archivos temporales.
+    numeroDocumento = numeroDocumento + 1;
 end
 
 dc=i+1;
@@ -52,14 +53,15 @@ dc=i+1;
 % trabaja con el archivo de test
 S=file2str([datadir datasetTest]); % Notar que aqui NO se anexa a lo que ya tenia S, los valores viejos se pierden.
 
+numeroDocumento = 1;
 for i=1:length(S),
 	% >>> VER <<<
 	% Notar que en la iteracion no se aumenta la variable dc (se sobrescribe esa posicion), pero esto no genera problema. Antes de sobrescribir la información la utiliza para dar nombre al archivo.
     % Notar que de igual forma que se hace con la posicion dc, se puede hacer con todos los documentos. se podria tener una unica posicion.
     idx=strfind(S{i},sprintf('\t'));
     clax{dc}=S{i}(1:idx(1)-1);
-    filesname{dc}=[strrep(strrep(datestr(now),':',''),' ','') '_' num2str(rand) 'test.txt'];
-    str2file({S{i}(idx+1:end)},[tempodir clax{dc} '_' filesname{dc}]);        
+    str2file({S{i}(idx+1:end)},[tempodir clax{dc} '_' num2str(numeroDocumento) 'test.txt']);
+    numeroDocumento = numeroDocumento + 1;
 end
 
 clear S clax;
@@ -115,9 +117,9 @@ for i=1:length(TITLES),
         idx1 = strfind(cad,'/');
         idx2 = strfind(cad,'_');
         classex{i} = cad(idx1(1)+1:idx2(1)-1);
-        idx0 = strfind(cad,'t.1'); % Agregue la t a 't.1' para el caso en que el numero random empieza con .1
+        idx0 = strfind(cad,'.1');
         istraining(i) = isempty(strfind(cad(1:idx0),'test'));
-        cad = cad(idx0(1)+3:end);
+        cad = cad(idx0(1)+2:end);
         idx = strfind(cad,' ');
     else
         % Aqui consideramos aquellos dataset donde TITLES{i} es un arreglo
