@@ -7,13 +7,10 @@ directorioActual = pwd;
 %% Lugar donde se encuentran los .mat
 directorioVariablesWorkspace = 'C:\Users\Juan Martin\Documents\GitHub\Clasificacion-Anticipada-de-Textos\Codigo Piloto\Variables del Workspace\';
 
-pathMatrices = [directorioVariablesWorkspace nombreDataset '_Matrices.mat'];
+pathMatrices = [directorioVariablesWorkspace nombreDataset '\' nombreDataset '_Matrices.mat'];
 load(pathMatrices);
 
-pathBlackWords = [directorioVariablesWorkspace nombreDataset '_BlackWords.mat'];
-load(pathBlackWords, 'blackList');
-
-pathTerminosPorClase = [directorioVariablesWorkspace nombreDataset '_TerminosPorClase.mat'];
+pathTerminosPorClase = [directorioVariablesWorkspace nombreDataset '\' nombreDataset '_TerminosPorClase.mat'];
 load(pathTerminosPorClase, 'indicesTerminosMasFrecPorClase');
 
 classex=unique(Ytrain);
@@ -25,60 +22,52 @@ end
 
 
 %% Cargo el modelo entrenado
-pathModeloEntrenamiento = [directorioVariablesWorkspace nombreDataset '_ModeloEntrenado.mat'];
+pathModeloEntrenamiento = [directorioVariablesWorkspace nombreDataset '\' nombreDataset '_ModeloEntrenado.mat'];
 load(pathModeloEntrenamiento, 'NB');
 %[NB] = MNNaiveBayes(Xtrain,Ytrain,1,[]);
 
 %% Realizo las predicciones incrementales (ventana a ventana)
-tamanioVentana = 5;
-ventanas = 1:tamanioVentana:36;
+tamanioVentana = 1;
+valorInicial = 1;
+valorFinal = 35
+ventanas = valorInicial:tamanioVentana:valorFinal;
 
-infoDocumentosParciales = cell(size(Xtest,1), length(ventanas));
-indiceVentanas = zeros(size(Xtest,1), length(ventanas));
-probCadaClase = cell(size(Xtest,1), length(ventanas));
-
-
+numeroDocumento = ceil(rand * (size(Xtest,1)));
+documento = full(sTest(numeroDocumento,:));
+documento = documento(find(documento));
+rXtest = zeros(1, size(Xtest,2));
 for j=1:length(ventanas),
     j
     close all;
-    rXtest=sparse(size(Xtest,1),size(Xtest,2));
-    %% Simulo el conjunto de atributos disminuidos
-    for i=1:size(Xtest,1),        
-        noz=length(find(sTest(i,:)~=0));
-        if (noz <= ventanas(j))
-            ntermssf = noz;
-        else
-            ntermssf = ventanas(j);
-        end
-        
-        indiceVentanas(i,j) = ntermssf;
-        
-        doc = full(sTest(i,1:ntermssf));
-        documentoParcial = doc(find(doc));
-        [npTotal, npDistintas, npBlackList, npMasFrecuentesCadaClase] = informacionDocumentosParciales(documentoParcial, blackList, indicesTerminosMasFrecPorClase);
-        
-        infoDocumentosParciales{i,j} = [npTotal, npDistintas, npBlackList, npMasFrecuentesCadaClase];
-        
-        myox=1;
-        wdix=1;
-        freqtsof=sparse(1,size(Xtest,2));
-        while myox<=ntermssf ,
-            if sTest(i,wdix)~=0,
-                freqtsof(sTest(i,wdix))=freqtsof(sTest(i,wdix))+1;
-                myox=myox+1;
-            end
-            wdix=wdix+1;
-        end
-        rXtest(i,:)=freqtsof;
-    end
+    % rXtest=sparse(1,size(Xtest,2));
+    %% Simulo el conjunto de atributos disminuidos     
+	noz=length(documento);
+	if (noz <= ventanas(j))
+		ntermssf = noz;
+	else
+		ntermssf = ventanas(j);
+	end
+	
+	documentoParcial = documento(1:ntermssf);
+	%[npTotal, npDistintas, npBlackList, npMasFrecuentesCadaClase] = informacionDocumentosParciales(documentoParcial, blackList, indicesTerminosMasFrecPorClase);
+	
+	%infoDocumentosParciales{i,j} = [npTotal, npDistintas, npBlackList, npMasFrecuentesCadaClase];
+	
+	myox=1;
+	wdix=1;
+	freqtsof=sparse(1,size(Xtest,2));
+	while myox<=ntermssf ,
+		if sTest(numeroDocumento,wdix)~=0,
+			freqtsof(sTest(1,wdix))=freqtsof(sTest(1,wdix))+1;
+			myox=myox+1;
+		end
+		wdix=wdix+1;
+	end
+	rXtest(1,:)=freqtsof;
     Xtestv=rXtest;
     
     %% Clasifico con Naive Bayes y estimo la performance 
     [NB0] = MNNaiveBayes(Xtestv,[],0,NB);
-    
-    for i=1:size(Xtest,1)
-        probCadaClase{i,j} = NB0.Pr(i,:);
-    end    
     
     pred=NB0.pred;
     for i=1:length(classex),
@@ -99,7 +88,7 @@ for j=1:length(ventanas),
     plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',2,'MarkerSize',10);
     % Coloco el titulo a la figura. Notar que se usa cell, de esta forma creo
     % titulos con mas de una linea.
-    titulo = {'Clasificacion Anticipada en el Dataset'; nombreDataset};
+    titulo = {'Clasificacion Anticipada'; ['documento de test numero: ' num2str(numeroDocumento)]; nombreDataset};
     title(titulo);
     legend('Macro F1', 'Accuracy', 'Location', 'southeast');
     set(gca,'FontSize',14);
@@ -138,10 +127,10 @@ if (exist([directorioFiguras '\Png'], 'dir') ~= 7)
 end
 
 % Guardo la figura en disco.
-nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_MacroF1Precision_Ventana' num2str(tamanioVentana)];
-nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_MacroF1Precision_Ventana' num2str(tamanioVentana)];
-nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_MacroF1Precision_Ventana' num2str(tamanioVentana)];
-nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_MacroF1Precision_Ventana' num2str(tamanioVentana)];
+nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_Analisis30Terminos_Doc' num2str(numeroDocumento)];
+nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_Analisis30Terminos_Doc' num2str(numeroDocumento)];
+nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_Analisis30Terminos_Doc' num2str(numeroDocumento)];
+nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_Analisis30Terminos_Doc' num2str(numeroDocumento)];
 saveas(f, nombreFiguraFig, 'fig');
 saveas(f, nombreFiguraSvg, 'svg');
 saveas(f, nombreFiguraEps, 'epsc'); % Guarda la figura en formato eps color.
