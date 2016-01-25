@@ -145,10 +145,10 @@ if (exist([directorioFiguras '\Png'], 'dir') ~= 7)
 end
 
 % Guardo la figura en disco.
-nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_Analisis30Terminos_Doc' num2str(numeroDocumento)];
-nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_Analisis30Terminos_Doc' num2str(numeroDocumento)];
-nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_Analisis30Terminos_Doc' num2str(numeroDocumento)];
-nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_Analisis30Terminos_Doc' num2str(numeroDocumento)];
+nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_Analisis30Terminos_Clase' num2str(claseActual)];
+nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_Analisis30Terminos_Clase' num2str(claseActual)];
+nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_Analisis30Terminos_Clase' num2str(claseActual)];
+nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_Analisis30Terminos_Clase' num2str(claseActual)];
 saveas(f, nombreFiguraFig, 'fig');
 saveas(f, nombreFiguraSvg, 'svg');
 saveas(f, nombreFiguraEps, 'epsc'); % Guarda la figura en formato eps color.
