@@ -32,51 +32,69 @@ valorInicial = 1;
 valorFinal = 35
 ventanas = valorInicial:tamanioVentana:valorFinal;
 
-numeroDocumento = ceil(rand * (size(Xtest,1)));
-documento = full(sTest(numeroDocumento,:));
-documento = documento(find(documento));
-rXtest = zeros(1, size(Xtest,2));
+%numeroDocumento = ceil(rand * (size(Xtest,1)));
+
+claseActual = 1
+DocumentosClase = sTest(find(Ytest==claseActual), :);
+rXtest = zeros(size(DocumentosClase,1), size(Xtest,2));
+
 for j=1:length(ventanas),
     j
     close all;
     % rXtest=sparse(1,size(Xtest,2));
-    %% Simulo el conjunto de atributos disminuidos     
-	noz=length(documento);
-	if (noz <= ventanas(j))
-		ntermssf = noz;
-	else
-		ntermssf = ventanas(j);
-	end
-	
-	documentoParcial = documento(1:ntermssf);
-	%[npTotal, npDistintas, npBlackList, npMasFrecuentesCadaClase] = informacionDocumentosParciales(documentoParcial, blackList, indicesTerminosMasFrecPorClase);
-	
-	%infoDocumentosParciales{i,j} = [npTotal, npDistintas, npBlackList, npMasFrecuentesCadaClase];
-	
-	myox=1;
-	wdix=1;
-	freqtsof=sparse(1,size(Xtest,2));
-	while myox<=ntermssf ,
-		if sTest(numeroDocumento,wdix)~=0,
-			freqtsof(sTest(1,wdix))=freqtsof(sTest(1,wdix))+1;
-			myox=myox+1;
-		end
-		wdix=wdix+1;
-	end
-	rXtest(1,:)=freqtsof;
+    %% Simulo el conjunto de atributos disminuidos
+    
+    for i=1:size(DocumentosClase,1),   
+        documento = full(DocumentosClase(i,:));
+        documento = documento(find(documento));
+        
+        noz=length(documento);
+        if (noz <= ventanas(j))
+            ntermssf = noz;
+        else
+            ntermssf = ventanas(j);
+        end
+        
+        documentoParcial = documento(1:ntermssf);
+        
+        myox=1;
+        wdix=1;
+        freqtsof=sparse(1,size(Xtest,2));
+        while myox<=ntermssf ,
+            if documentoParcial(wdix)~=0,
+                freqtsof(documentoParcial(wdix))=freqtsof(documentoParcial(wdix))+1;
+                myox=myox+1;
+            end
+            wdix=wdix+1;
+        end
+        rXtest(i,:)=freqtsof;
+    end    
+    
     Xtestv=rXtest;
     
     %% Clasifico con Naive Bayes y estimo la performance 
     [NB0] = MNNaiveBayes(Xtestv,[],0,NB);
     
     pred=NB0.pred;
+    %{
     for i=1:length(classex),
         predtem=-ones(size(Ytest));
         predtem(find(pred==classex(i)))=1;
         [prnbmm(i),rrnbmm(i),frnbmm(i)] = eval_prf(predtem,YTones(:,i),1);
     end
+    %}
+    predtem=-ones(size(Ytest));
+    predtem(find(pred==claseActual))=1;
+    [prnbmm,rrnbmm,frnbmm] = eval_prf(predtem,YTones(:,claseActual),1);    
+    
+    %{
     efes(j).NBMM=[mean(prnbmm),mean(rrnbmm),mean(frnbmm)];
     accNBMM(j)=(length(find((pred-Ytest)==0))./length(Ytest)).*100;
+    predictions(j).NBMM=pred;
+    lasefesnbm(j)=mean(frnbmm);
+    %}
+    efes(j).NBMM=[prnbmm,rrnbmm,frnbmm];
+    accNBMM(j)=(length(find((pred - Ytest(find(Ytest==claseActual)))==0))./length(DocumentosClase)).*100;
     predictions(j).NBMM=pred;
     lasefesnbm(j)=mean(frnbmm);
     
@@ -88,7 +106,7 @@ for j=1:length(ventanas),
     plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',2,'MarkerSize',10);
     % Coloco el titulo a la figura. Notar que se usa cell, de esta forma creo
     % titulos con mas de una linea.
-    titulo = {'Clasificacion Anticipada'; ['documento de test numero: ' num2str(numeroDocumento)]; nombreDataset};
+    titulo = {'Clasificacion Anticipada'; nombreDataset};
     title(titulo);
     legend('Macro F1', 'Accuracy', 'Location', 'southeast');
     set(gca,'FontSize',14);
