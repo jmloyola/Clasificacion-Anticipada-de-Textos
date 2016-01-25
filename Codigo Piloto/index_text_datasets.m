@@ -48,6 +48,8 @@ for i=1:length(S),
     numeroDocumento = numeroDocumento + 1;
 end
 
+nombreClases = unique(clax);
+
 dc=i+1;
 
 % trabaja con el archivo de test
@@ -64,7 +66,7 @@ for i=1:length(S),
     numeroDocumento = numeroDocumento + 1;
 end
 
-clear S clax;
+clear S;
 
 %% Indexo utilizan el toolbox TMG
 OPTIONS.min_length=3;
@@ -224,7 +226,7 @@ cantidadMaximaTerminosTest = max(cantTerminos);
 
 nombreMatrices = [nombreDataset '_Matrices.mat'];
 
-save(nombreMatrices, 'Xtrain', 'Xtest', 'Ytrain', 'Ytest', 'seqinf', 'sTest', 'sTrain', 'cantidadMaximaTerminosTest');
+save(nombreMatrices, 'Xtrain', 'Xtest', 'Ytrain', 'Ytest', 'seqinf', 'sTest', 'sTrain', 'cantidadMaximaTerminosTest', 'nombreClases');
 
 cd(directorioActual);
 

@@ -106,7 +106,7 @@ for j=1:length(ventanas),
     plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',2,'MarkerSize',10);
     % Coloco el titulo a la figura. Notar que se usa cell, de esta forma creo
     % titulos con mas de una linea.
-    titulo = {'Clasificacion Anticipada'; nombreDataset};
+    titulo = {'Clasificacion Anticipada'; ['Clase: ' nombreClases(claseActual)]; nombreDataset};
     title(titulo);
     legend('Macro F1', 'Accuracy', 'Location', 'southeast');
     set(gca,'FontSize',14);
@@ -145,10 +145,10 @@ if (exist([directorioFiguras '\Png'], 'dir') ~= 7)
 end
 
 % Guardo la figura en disco.
-nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_Analisis30Terminos_Clase' num2str(claseActual)];
-nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_Analisis30Terminos_Clase' num2str(claseActual)];
-nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_Analisis30Terminos_Clase' num2str(claseActual)];
-nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_Analisis30Terminos_Clase' num2str(claseActual)];
+nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_Analisis30Terminos_Clase_' nombreClases(claseActual)];
+nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_Analisis30Terminos_Clase_' nombreClases(claseActual)];
+nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_Analisis30Terminos_Clase_' nombreClases(claseActual)];
+nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_Analisis30Terminos_Clase_' nombreClases(claseActual)];
 saveas(f, nombreFiguraFig, 'fig');
 saveas(f, nombreFiguraSvg, 'svg');
 saveas(f, nombreFiguraEps, 'epsc'); % Guarda la figura en formato eps color.
