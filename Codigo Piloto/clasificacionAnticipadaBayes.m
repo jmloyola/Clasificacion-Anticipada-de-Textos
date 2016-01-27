@@ -31,7 +31,7 @@ cd(directorioActual);
 [NB] = MNNaiveBayes(Xtrain,Ytrain,1,[]);
 
 %% Realizo las predicciones incrementales (ventana a ventana)
-tamanioVentana = 5;
+tamanioVentana = 1;
 ventanas = 1:tamanioVentana:250;
 ventanas(end+1) = cantidadMaximaTerminosTest; %%% VER SI ESTA BIEN. INTENTO OBTENER LA CANTIDAD DE TERMINOS DEL DOCUMENTO MAS LARGO.
 %ventanas = 1:tamanioVentana:size(sTest,2);
@@ -162,7 +162,7 @@ nombreArchivoSalida = [nombreDataset '_ModeloEntrenado.mat'];
 save(nombreArchivoSalida, 'NB');
 
 nombreArchivoSalida = [nombreDataset '_InfoDocumentosParciales.mat'];
-save(nombreArchivoSalida, 'infoDocumentosParciales', 'indiceVentanas', 'NB', 'probCadaClase', 'README');
+save(nombreArchivoSalida, 'infoDocumentosParciales', 'indiceVentanas', 'probCadaClase', 'README');
 
 cd(directorioActual);
 

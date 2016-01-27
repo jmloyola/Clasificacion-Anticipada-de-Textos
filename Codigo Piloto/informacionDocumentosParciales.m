@@ -19,14 +19,14 @@ function [ npTotal, npDistintas, npBlackList, npMasFrecuentesCadaClase ] = infor
     npDistintas = length(unique(documentoParcial));
 
     blackWords = 0;
-    if (isempty(blackList))      
+    if (~isempty(blackList))
         for i= 1:size(blackList)
             blackWords = blackWords + length(find(documentoParcial==blackList(i)));
         end
     end
     npBlackList = npTotal - blackWords;
     
-    if (isempty(indicesTerminosMasFrecPorClase))
+    if (~isempty(indicesTerminosMasFrecPorClase))
         cantClases = size(indicesTerminosMasFrecPorClase,1);
         cantTerminos = size(indicesTerminosMasFrecPorClase,2);
         
@@ -34,10 +34,10 @@ function [ npTotal, npDistintas, npBlackList, npMasFrecuentesCadaClase ] = infor
         
         for i= 1:cantClases
             for j= 1:cantTerminos
-                npMasFrecuentesCadaClase(i) = npMasFrecuentesCadaClase(i) + length(find(documentoParcial==indicesTerminosMasFrecPorClase(i,j)));
+                npMasFrecuentesCadaClase(i) = npMasFrecuentesCadaClase(i) + length(find(documentoParcial==indicesTerminosMasFrecPorClase{i}(j)));
             end
         end
     else
-        npMasFrecuentesCadaClase = [];
+        npMasFrecuentesCadaClase = -1;
     end
 end
