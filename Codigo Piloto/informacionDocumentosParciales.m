@@ -27,8 +27,10 @@ function [ npTotal, npDistintas, npBlackList, npMasFrecuentesCadaClase ] = infor
     npBlackList = npTotal - blackWords;
     
     if (~isempty(indicesTerminosMasFrecPorClase))
-        cantClases = size(indicesTerminosMasFrecPorClase,1);
-        cantTerminos = size(indicesTerminosMasFrecPorClase,2);
+        % Notar que indicesTerminosMasFrecPorClase es un cell de 1x8 donde
+        % cada celda es un arreglo de 25x1 terminos.
+        cantClases = size(indicesTerminosMasFrecPorClase,2);
+        cantTerminos = length(indicesTerminosMasFrecPorClase{1});
         
         npMasFrecuentesCadaClase = zeros(1,cantClases);
         
