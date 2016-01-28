@@ -13,6 +13,9 @@ load(pathMatrices);
 pathTerminosPorClase = [directorioVariablesWorkspace nombreDataset '\' nombreDataset '_TerminosPorClase.mat'];
 load(pathTerminosPorClase, 'indicesTerminosMasFrecPorClase');
 
+pathInformacionParcial = [directorioVariablesWorkspace nombreDataset '\' nombreDataset '_InfoDocumentosParciales.mat'];
+load(pathInformacionParcial, 'infoDocumentosParciales');
+
 classex=unique(Ytrain);
 
 YTones=-ones(size(Ytest,1),length(classex));
@@ -65,7 +68,7 @@ for j=1:length(ventanas),
             wdix = wdix+1;
         end
         rXtest(i,:) = freqtsof;
-    end    
+    end
     
     Xtestv=rXtest;
     
@@ -89,23 +92,48 @@ for j=1:length(ventanas),
     f = figure;
     %plot((ventanas(1:j)),lasefesnbm','LineWidth',2,'MarkerSize',10); %% plots f_1 measure
 	%plot((ventanas(1:j)),accNBMM','LineWidth',2,'MarkerSize',10); %% plots accuracy
-    plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',2,'MarkerSize',10);
+    subplot(2,1,1);
+    plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',1,'MarkerSize',8);
     % Coloco el titulo a la figura. Notar que se usa cell, de esta forma creo
     % titulos con mas de una linea.
     %% titulo = {'Clasificacion Anticipada'; char(strcat({'Clase: '}, nombreClases(claseActual))); nombreDataset};
     titulo = {'Clasificacion Anticipada'; nombreDataset};
     title(titulo);
-    legend('Macro F1', 'Accuracy', 'Location', 'southeast');
-    set(gca,'FontSize',14);
+    %legend('Macro F1', 'Accuracy', 'Location', 'southeast');
+    legend('Macro F1', 'Accuracy','Location','eastoutside','Orientation','vertical');
+    set(gca,'FontSize',11);
     xlabel('Cantidad de Terminos Leidos');
-	%ylabel('Accuracy');
+	%ylabel('Accuracy'); 
     %ylabel('Macro f_1 measure');
     ylabel('Porcentaje');
     set(gcf,'Color','w');
     grid;
     gcf;
     box;
+    
+    sumaCantTerminos = zeros(1,length(classex));
+    for x=1:length(classex)
+        documentosClase = find(Ytest==i);
+        for y=1:length(documentosClase)
+            sumaCantTerminos(x) = sumaCantTerminos(x) + infoDocumentosParciales{documentosClase(y),j}(x);
+        end
+        sumaCantTerminos(x) = sumaCantTerminos(x) / length(documentosClase);
+    end
+    
+    mediaSumaCantTerminos(j) = mean(sumaCantTerminos);
+    
+    subplot(2,1,2);
+    plot((ventanas(1:j)),mediaSumaCantTerminos,'LineWidth',1,'MarkerSize',8);
 
+    titulo = {'Numero Palabras Relevantes'; 'para Clase Indicada'};
+    title(titulo);
+    legend('NumTerRelevantes','Location','eastoutside','Orientation','vertical');
+    set(gca,'FontSize',11);
+    xlabel('Cantidad de Terminos Leidos');
+    ylabel('Numero de Palabras');
+    set(gcf,'Color','w');
+    grid;    
+    
     pause(1);   
 end
 
