@@ -24,7 +24,7 @@ for i= 1:cantidadClases
     cantRepeticionTerminos = accumarray(serieDeTerminosPorClaseDataset', 1); % Con esta funcion (accumarray) podemos contar la cantidad de veces que se repite cada termino.
     %indicesCantRepeticionTerminos = find(cantRepeticionTerminos); % Al cuete.
     [valores, indicesValores] = sort(cantRepeticionTerminos);
-    indicesTerminosMasFrecPorClase{i} = indicesValores(end-24 : end);
+    indicesTerminosMasFrecPorClase{i} = indicesValores(end-cantidadTerminosRelevantes : end);
 end
 
 nombreterminosPorClase = [nombreDataset '_TerminosPorClase.mat'];

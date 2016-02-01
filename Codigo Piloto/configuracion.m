@@ -14,6 +14,8 @@ nombreDataset = 'r8-all-terms-clean';
 % nombreDataset = 'r52-no-stop-clean'; %% PRECISION 0 WTF!
 % nombreDataset = 'r52-stemmed'; %% PRECISION 0 WTF!
 
-save('configuracion.mat', 'nombreDataset');
+cantidadTerminosRelevantes = 25 - 1;
+
+save('configuracion.mat', 'nombreDataset', 'cantidadTerminosRelevantes');
 
 disp('El programa finalizo exitosamente');
