@@ -89,10 +89,10 @@ for j=1:length(ventanas),
     
     clear pred;
     close all; 
-    f = figure;
+    f = figure('units','normalized','position',[.01 .01 .99 .99]);
     %plot((ventanas(1:j)),lasefesnbm','LineWidth',2,'MarkerSize',10); %% plots f_1 measure
 	%plot((ventanas(1:j)),accNBMM','LineWidth',2,'MarkerSize',10); %% plots accuracy
-    subplot(2,1,1);
+    subplot(2,2,1);
     plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',1,'MarkerSize',8);
     % Coloco el titulo a la figura. Notar que se usa cell, de esta forma creo
     % titulos con mas de una linea.
@@ -112,27 +112,52 @@ for j=1:length(ventanas),
     box;
     
     sumaCantTerminos = zeros(1,length(classex));
+    porcentajeTerminos = zeros(1,length(classex));
+    sumaPorcentajesTerminos = zeros(1,length(classex));
     for x=1:length(classex)
         documentosClase = find(Ytest==i);
         for y=1:length(documentosClase)
-            sumaCantTerminos(x) = sumaCantTerminos(x) + infoDocumentosParciales{documentosClase(y),j}(x);
+            sumaCantTerminos(x) = sumaCantTerminos(x) + infoDocumentosParciales{documentosClase(y),j}(x+3); % Sumo tres a la posicion de infoDocumentosParciales para obtener los valores de cantidad terminos más importantes de cada clase
+            porcentajeTerminos(x) = infoDocumentosParciales{documentosClase(y),j}(x+3) / infoDocumentosParciales{documentosClase(y),j}(1); % La primer posicion de infoDocumentosParciales{documentosClase(y),j} tiene la cantidad de palabras.
+            sumaPorcentajesTerminos(x) = sumaPorcentajesTerminos(x) + porcentajeTerminos(x);
         end
         sumaCantTerminos(x) = sumaCantTerminos(x) / length(documentosClase);
+        sumaPorcentajesTerminos(x) = sumaPorcentajesTerminos(x) / length(documentosClase);
     end
     
     mediaSumaCantTerminos(j) = mean(sumaCantTerminos);
+    mediaSumaPorcentajesTerminos(j) = mean(sumaPorcentajesTerminos);
     
-    subplot(2,1,2);
+    %% Grafico el numero de terminos mas importantes de la clase indicada de cada documento.
+    subplot(2,2,2);
     plot((ventanas(1:j)),mediaSumaCantTerminos,'LineWidth',1,'MarkerSize',8);
 
     titulo = {'Numero Palabras Relevantes'; 'para Clase Indicada'};
     title(titulo);
-    legend('NumTerRelevantes','Location','eastoutside','Orientation','vertical');
+    legend('#TerImp ','Location','eastoutside','Orientation','vertical');
     set(gca,'FontSize',11);
     xlabel('Cantidad de Terminos Leidos');
     ylabel('Numero de Palabras');
     set(gcf,'Color','w');
-    grid;    
+    grid;
+    gcf;
+    box;
+
+    %% Grafico el porcentaje de terminos mas importantes de la clase indicada de cada documento.
+    subplot(2,2,3);
+    plot((ventanas(1:j)),mediaSumaPorcentajesTerminos,'LineWidth',1,'MarkerSize',8);
+
+    titulo = {'Porcentaje Palabras Relevantes'; 'para Clase Indicada'};
+    title(titulo);
+    legend('%TerImp ','Location','eastoutside','Orientation','vertical');
+    set(gca,'FontSize',11);
+    xlabel('Cantidad de Terminos Leidos');
+    ylabel('Porcentaje de Terminos Importantes');
+    set(gcf,'Color','w');
+    grid;
+    gcf;
+    box;
+    
     
     pause(1);   
 end
