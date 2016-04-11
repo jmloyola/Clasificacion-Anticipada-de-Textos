@@ -29,9 +29,9 @@ pathModeloEntrenamiento = [directorioVariablesWorkspace nombreDataset '\' nombre
 load(pathModeloEntrenamiento, 'NB');
 
 %% Realizo las predicciones incrementales (ventana a ventana)
-tamanioVentana = 2;
+tamanioVentana = 1;
 valorInicial = 1;
-valorFinal = 70;
+valorFinal = 35;
 ventanas = valorInicial:tamanioVentana:valorFinal;
 
 documentoTerminado = zeros(1,length(ventanas));
@@ -102,7 +102,7 @@ for j=1:length(ventanas),
     f = figure('units','normalized','position',[.01 .01 .99 .99]);
     %plot((ventanas(1:j)),lasefesnbm','LineWidth',2,'MarkerSize',10); %% plots f_1 measure
 	%plot((ventanas(1:j)),accNBMM','LineWidth',2,'MarkerSize',10); %% plots accuracy
-    subplot(2,2,1);
+    subplot(3,1,1);
     plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',1,'MarkerSize',8);
     % Coloco el titulo a la figura. Notar que se usa cell, de esta forma creo
     % titulos con mas de una linea.
@@ -121,71 +121,67 @@ for j=1:length(ventanas),
     gcf;
     box;
     
-    sumaCantTerminos = zeros(1,length(classex));
-    porcentajeTerminos = zeros(1,length(classex));
-    sumaPorcentajesTerminos = zeros(1,length(classex));
-    for x=1:length(classex)
-        documentosClase = find(Ytest==i);
-        for y=1:length(documentosClase)
-            sumaCantTerminos(x) = sumaCantTerminos(x) + infoDocumentosParciales{documentosClase(y),j}(x+3); % Sumo tres a la posicion de infoDocumentosParciales para obtener los valores de cantidad terminos más importantes de cada clase
-            porcentajeTerminos(x) = infoDocumentosParciales{documentosClase(y),j}(x+3) / infoDocumentosParciales{documentosClase(y),j}(1); % La primer posicion de infoDocumentosParciales{documentosClase(y),j} tiene la cantidad de palabras.
-            sumaPorcentajesTerminos(x) = sumaPorcentajesTerminos(x) + porcentajeTerminos(x);
-        end
-        sumaCantTerminos(x) = sumaCantTerminos(x) / length(documentosClase);
-        sumaPorcentajesTerminos(x) = sumaPorcentajesTerminos(x) / length(documentosClase);
+    
+    sumaProbClaseIndicada = 0;
+    %porcentajeTerminos = zeros(1,length(classex));
+    %sumaPorcentajesTerminos = zeros(1,length(classex));
+    for x=1:size(Xtest,1)
+        claseDelDocumento = Ytest(x);
+        sumaProbClaseIndicada = sumaProbClaseIndicada + NB0.Probabilidades(x,claseDelDocumento);
     end
     
-    mediaSumaCantTerminos(j) = mean(sumaCantTerminos);
-    mediaSumaPorcentajesTerminos(j) = mean(sumaPorcentajesTerminos);
+    mediaSumaProbClaseIndicada(j) = sumaProbClaseIndicada / size(Xtest,1);
     
     %% Grafico el numero de terminos mas importantes de la clase indicada de cada documento.
-    subplot(2,2,2);
-    plot((ventanas(1:j)),mediaSumaCantTerminos,'LineWidth',1,'MarkerSize',8);
+    subplot(3,1,2);
+    plot((ventanas(1:j)),mediaSumaProbClaseIndicada,'LineWidth',1,'MarkerSize',8);
 
-    titulo = {'Numero Palabras Relevantes'; 'para Clase Indicada'};
+    titulo = 'Probabilidad de la Clase Indicada';
     title(titulo);
-    legend('#TerImp ','Location','eastoutside','Orientation','vertical');
+    %legend('#TerImp ','Location','eastoutside','Orientation','vertical');
     set(gca,'FontSize',11);
     xlabel('Cantidad de Terminos Leidos');
-    ylabel('Numero de Palabras');
+    ylabel('Probabilidad');
     set(gcf,'Color','w');
     grid;
     gcf;
     box;
 
+    
+    
+    diferenciaConClaseIndicada = 0;
+    
+    for x=1:size(Xtest,1)      
+        claseDelDocumento = Ytest(x);
+        if (claseDelDocumento == NB0.pred(x))
+            [valoresOrdenados, indicesValores] = sort(NB0.Probabilidades(x,:));
+            probabilidadClaseIndicada = NB0.Probabilidades(x,claseDelDocumento);
+            probabilidadSegundaClase = NB0.Probabilidades(x,indicesValores(end-1));
+            diferenciaConClaseIndicada = diferenciaConClaseIndicada + (probabilidadClaseIndicada - probabilidadSegundaClase);
+        else
+            probabilidadClaseIndicada = NB0.Probabilidades(x,claseDelDocumento);
+            probabilidadMayor = NB0.Probabilidades(x,NB0.pred(x));
+            diferenciaConClaseIndicada = diferenciaConClaseIndicada + (probabilidadClaseIndicada - probabilidadMayor);
+        end
+    end
+    
+    mediaDiferenciaConClaseIndicada(j) = diferenciaConClaseIndicada / size(Xtest,1);
+    
     %% Grafico el porcentaje de terminos mas importantes de la clase indicada de cada documento.
-    subplot(2,2,3);
-    plot((ventanas(1:j)),mediaSumaPorcentajesTerminos,'LineWidth',1,'MarkerSize',8);
+    
+    subplot(3,1,3);
+    plot((ventanas(1:j)),mediaDiferenciaConClaseIndicada,'LineWidth',1,'MarkerSize',8);
 
-    titulo = {'Porcentaje Palabras Relevantes'; 'para Clase Indicada'};
+    titulo = {'Diferencia entre las dos primeras clases'; 'con mayor probabilidad'};
     title(titulo);
-    legend('%TerImp ','Location','eastoutside','Orientation','vertical');
+    %legend('%TerImp ','Location','eastoutside','Orientation','vertical');
     set(gca,'FontSize',11);
     xlabel('Cantidad de Terminos Leidos');
-    ylabel('Porcentaje de Terminos Importantes');
+    ylabel('Diferencia');
     set(gcf,'Color','w');
     grid;
     gcf;
     box;
-    
-    
-    
-    
-    
-    %% Grafico la cantidad de documentos que han finalizado a medida que se leen los terminos.
-    subplot(2,2,4);
-    plot((ventanas(1:j)),documentoTerminado(1:j),'LineWidth',1,'MarkerSize',8);
-
-    titulo = {'Cantidad de Documentos que han Finalizado'};
-    title(titulo);
-    legend('#DocFin','Location','eastoutside','Orientation','vertical');
-    set(gca,'FontSize',11);
-    xlabel('Cantidad de Terminos Leidos');
-    ylabel('Cantidad de Documentos finalizados');
-    set(gcf,'Color','w');
-    grid;
-    gcf;
-    box;    
     
     pause(1);   
 end
@@ -219,10 +215,10 @@ nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_Analisis30Terminos_
 nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_Analisis30Terminos_Clase_' char(nombreClases(claseActual))];
 nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_Analisis30Terminos_Clase_' char(nombreClases(claseActual))];
 %}
-nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_Analisis30Terminos'];
-nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_Analisis30Terminos'];
-nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_Analisis30Terminos'];
-nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_Analisis30Terminos'];
+nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_probabilityEvolution'];
+nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_probabilityEvolution'];
+nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_probabilityEvolution'];
+nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_probabilityEvolution'];
 saveas(f, nombreFiguraFig, 'fig');
 saveas(f, nombreFiguraSvg, 'svg');
 saveas(f, nombreFiguraEps, 'epsc'); % Guarda la figura en formato eps color.
