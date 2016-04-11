@@ -43,12 +43,12 @@ else
     end                
     
     NB.Pr=Pr;
-    %totalProbabilidades = sum(exp(NB.Pr), 2);
-    totalProbabilidades = sum(NB.Pr, 2);
+    totalProbabilidades = sum(exp(NB.Pr), 2);
+    %totalProbabilidades = sum(NB.Pr, 2);
     
     for j=1:ndocs
-        %NB.Probabilidades(j,:) = exp(NB.Pr(j,:)) / totalProbabilidades(j);
-        NB.Probabilidades(j,:) = NB.Pr(j,:) / totalProbabilidades(j);
+        NB.Probabilidades(j,:) = exp(NB.Pr(j,:)) / totalProbabilidades(j);
+        %NB.Probabilidades(j,:) = NB.Pr(j,:) / totalProbabilidades(j);
     end
     
     [~,NB.pred]=max(Pr');
