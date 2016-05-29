@@ -31,10 +31,24 @@ load(pathModeloEntrenamiento, 'NB');
 %% Realizo las predicciones incrementales (ventana a ventana)
 tamanioVentana = 1;
 valorInicial = 1;
-valorFinal = 35;
+valorFinal = 100;
 ventanas = valorInicial:tamanioVentana:valorFinal;
 
 documentoTerminado = zeros(1,length(ventanas));
+
+%% Tipos de Documentos
+% Tipo 1 ---> Documentos que hasta la ventana han sido clasificados
+% correctamente siempre.
+% Tipo 2 ---> Documentos que en algún momento se clasificaron bien.
+% Tipo 3 ---> Documentos que nunca se clasificaron correctamente.
+
+% tipoDocumentos tiene n filas y m columnas, donde n=cantidad de documentos
+% y m=cantidad de ventanas (epocas)
+tipoDocumentos = zeros(size(Xtest,1),length(ventanas));
+
+cantTipoUno = zeros(length(ventanas), 1);
+cantTipoDos = zeros(length(ventanas), 1);
+cantTipoTres = zeros(length(ventanas), 1);
 
 %% claseActual = 1
 %% DocumentosClase = sTest(find(Ytest==claseActual), :);
@@ -122,67 +136,61 @@ for j=1:length(ventanas),
     box;
     
     
-    sumaProbClaseIndicada = 0;
-    %porcentajeTerminos = zeros(1,length(classex));
-    %sumaPorcentajesTerminos = zeros(1,length(classex));
     for x=1:size(Xtest,1)
         claseDelDocumento = Ytest(x);
-        sumaProbClaseIndicada = sumaProbClaseIndicada + NB0.Probabilidades(x,claseDelDocumento);
+        
+        if (j == 1)
+            if (NB0.pred(x) == claseDelDocumento)
+                tipoDocumentos(x,j) = 1;
+                cantTipoUno(j) = cantTipoUno(j) + 1;
+            else
+                tipoDocumentos(x,j) = 3;
+                cantTipoTres(j) = cantTipoTres(j) + 1;
+            end
+        else
+            if (tipoDocumentos(x,j-1) == 1)
+                if (NB0.pred(x) == claseDelDocumento)
+                    tipoDocumentos(x,j) = 1;
+                    cantTipoUno(j) = cantTipoUno(j) + 1;
+                else
+                    tipoDocumentos(x,j) = 2;
+                    cantTipoDos(j) = cantTipoDos(j) + 1;
+                end
+            end
+            
+            if (tipoDocumentos(x,j-1) == 2)
+                tipoDocumentos(x,j) = 2;
+                cantTipoDos(j) = cantTipoDos(j) + 1;
+            end
+            
+            if (tipoDocumentos(x,j-1) == 3)
+                if (NB0.pred(x) == claseDelDocumento)
+                    tipoDocumentos(x,j) = 2;
+                    cantTipoDos(j) = cantTipoDos(j) + 1;
+                else
+                    tipoDocumentos(x,j) = 3;
+                    cantTipoTres(j) = cantTipoTres(j) + 1;
+                end
+            end
+        end  
     end
     
-    mediaSumaProbClaseIndicada(j) = sumaProbClaseIndicada / size(Xtest,1);
     
     %% Grafico el numero de terminos mas importantes de la clase indicada de cada documento.
     subplot(3,1,2);
-    plot((ventanas(1:j)),mediaSumaProbClaseIndicada,'LineWidth',1,'MarkerSize',8);
+    plot((ventanas(1:j)),[cantTipoUno(1:j)'; cantTipoDos(1:j)'; cantTipoTres(1:j)'],'LineWidth',1,'MarkerSize',8);
 
-    titulo = 'Probabilidad de la Clase Indicada';
+    titulo = 'Cantidad de Documentos de Cada Tipo';
     title(titulo);
-    %legend('#TerImp ','Location','eastoutside','Orientation','vertical');
+    legend('Tipo 1', 'Tipo 2', 'Tipo 3','Location','eastoutside','Orientation','vertical');
     set(gca,'FontSize',11);
     xlabel('Cantidad de Terminos Leidos');
-    ylabel('Probabilidad');
+    ylabel('Cantidad de Documentos');
     set(gcf,'Color','w');
     grid;
     gcf;
     box;
 
-    
-    
-    diferenciaConClaseIndicada = 0;
-    
-    for x=1:size(Xtest,1)      
-        claseDelDocumento = Ytest(x);
-        if (claseDelDocumento == NB0.pred(x))
-            [valoresOrdenados, indicesValores] = sort(NB0.Probabilidades(x,:));
-            probabilidadClaseIndicada = NB0.Probabilidades(x,claseDelDocumento);
-            probabilidadSegundaClase = NB0.Probabilidades(x,indicesValores(end-1));
-            diferenciaConClaseIndicada = diferenciaConClaseIndicada + (probabilidadClaseIndicada - probabilidadSegundaClase);
-        else
-            probabilidadClaseIndicada = NB0.Probabilidades(x,claseDelDocumento);
-            probabilidadMayor = NB0.Probabilidades(x,NB0.pred(x));
-            diferenciaConClaseIndicada = diferenciaConClaseIndicada + (probabilidadClaseIndicada - probabilidadMayor);
-        end
-    end
-    
-    mediaDiferenciaConClaseIndicada(j) = diferenciaConClaseIndicada / size(Xtest,1);
-    
-    %% Grafico el porcentaje de terminos mas importantes de la clase indicada de cada documento.
-    
-    subplot(3,1,3);
-    plot((ventanas(1:j)),mediaDiferenciaConClaseIndicada,'LineWidth',1,'MarkerSize',8);
-
-    titulo = {'Diferencia entre las dos primeras clases'; 'con mayor probabilidad'};
-    title(titulo);
-    %legend('%TerImp ','Location','eastoutside','Orientation','vertical');
-    set(gca,'FontSize',11);
-    xlabel('Cantidad de Terminos Leidos');
-    ylabel('Diferencia');
-    set(gcf,'Color','w');
-    grid;
-    gcf;
-    box;
-    
     pause(1);   
 end
 
@@ -208,17 +216,11 @@ if (exist([directorioFiguras '\Png'], 'dir') ~= 7)
     mkdir('Png');
 end
 
-% Guardo la figura en disco.
-%{
-nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_Analisis30Terminos_Clase_' char(nombreClases(claseActual))];
-nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_Analisis30Terminos_Clase_' char(nombreClases(claseActual))];
-nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_Analisis30Terminos_Clase_' char(nombreClases(claseActual))];
-nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_Analisis30Terminos_Clase_' char(nombreClases(claseActual))];
-%}
-nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_probabilityEvolution'];
-nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_probabilityEvolution'];
-nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_probabilityEvolution'];
-nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_probabilityEvolution'];
+%% Guardo las figuras en disco.
+nombreFiguraFig = [directorioFiguras '\Fig\' nombreDataset '_documentType'];
+nombreFiguraSvg = [directorioFiguras '\Svg\' nombreDataset '_documentType'];
+nombreFiguraEps = [directorioFiguras '\Eps\' nombreDataset '_documentType'];
+nombreFiguraPng = [directorioFiguras '\Png\' nombreDataset '_documentType'];
 saveas(f, nombreFiguraFig, 'fig');
 saveas(f, nombreFiguraSvg, 'svg');
 saveas(f, nombreFiguraEps, 'epsc'); % Guarda la figura en formato eps color.

@@ -29,7 +29,7 @@ pathModeloEntrenamiento = [directorioVariablesWorkspace nombreDataset '\' nombre
 load(pathModeloEntrenamiento, 'NB');
 
 %% Realizo las predicciones incrementales (ventana a ventana)
-tamanioVentana = 2;
+tamanioVentana = 5;
 valorInicial = 1;
 valorFinal = 70;
 ventanas = valorInicial:tamanioVentana:valorFinal;

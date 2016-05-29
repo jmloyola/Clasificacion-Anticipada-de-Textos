@@ -2,8 +2,8 @@ clear all; close all; clc
 
 % nombreDataset = 'webkb-stemmed';
 % nombreDataset = 'r8-all-terms'
-% nombreDataset = '20ng-stemmed';
-nombreDataset = 'r8-all-terms-clean';
+nombreDataset = '20ng-stemmed';
+% nombreDataset = 'r8-all-terms-clean';
 
 %% Dataset para probar
 % nombreDataset = 'r8-no-short-clean';

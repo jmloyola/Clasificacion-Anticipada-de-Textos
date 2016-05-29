@@ -27,33 +27,11 @@ else
             ofin=find(X(j,:)~=0);
             
             Pr(j,i)=(log(NB.prior(i)))+sum(log((NB.P(ofin,i)').^X(j,ofin)));
-            %Pr(j,i)=((NB.prior(i)))+sum(((NB.P(ofin,i)').^X(j,ofin)));
-            
-%             Pr(j,i)=(log(NB.prior(i)))+sum(log((NB.P(:,i)').^X(j,:)));
-            
-%             Pr(j,i)=(NB.prior(i)).*(prod((NB.P(ofin,i)').^X(j,ofin)));
-
-
-%             Pr(j,i)=(factorial(length(ofin))).*(NB.prior(i)).*(prod(((NB.P(:,i)').^X(j,:))./factorial(X(j,:))));
-            
-%             nofin=setdiff(1:nterms,ofin);
-%             Pr(j,i)=(NB.prior(i)).*(prod(((NB.P(ofin,i)').^X(j,ofin))./factorial(X(j,ofin)))).*(factorial(sum(X(j,ofin))));
         end
-%         Prn(j,:)=Pr(j,:)./sum(NB.prior.*Pr(j,:));
-%         Prn2(j,:)=Pr(j,:)./sum(Pr(j,:));
     end                
     
     NB.Pr=Pr;
-    totalProbabilidades = sum(exp(NB.Pr), 2);
-    %% totalProbabilidades = sum(NB.Pr, 2);
-    
-    for j=1:ndocs
-        NB.Probabilidades(j,:) = exp(NB.Pr(j,:)) / totalProbabilidades(j);
-        %% NB.Probabilidades(j,:) = NB.Pr(j,:) / totalProbabilidades(j);
-    end
-    
-    NB.Probabilidades(1,:)
-    
+
     [~,NB.pred]=max(Pr');
     NB.pred=NB.pred';
 end

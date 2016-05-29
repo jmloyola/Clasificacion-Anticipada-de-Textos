@@ -43,8 +43,20 @@ else
     end                
     
     NB.Pr=Pr;
+    
+    %% Agregado
+    %%totalProbabilidades = sum(exp(NB.Pr), 2);
+    
+    %%for j=1:ndocs
+    %%    NB.Probabilidades(j,:) = exp(NB.Pr(j,:)) / totalProbabilidades(j);
+    %%end
+    
 %     NB.Prn=Prn;
 %     NB.Prn2=Prn2;
+
+    %%[~,NB.pred]=max(NB.Probabilidades');
+    %%NB.pred=NB.pred';
+
     [~,NB.pred]=max(Pr');
     NB.pred=NB.pred';
 end

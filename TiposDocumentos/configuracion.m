@@ -1,8 +1,8 @@
 clear all; close all; clc
 
 % nombreDataset = 'r8-all-terms'
-% nombreDataset = 'r8-all-terms-clean';
-nombreDataset = '20ng-stemmed';
+nombreDataset = 'r8-all-terms-clean';
+% nombreDataset = '20ng-stemmed';
 
 %% Dataset para probar
 % nombreDataset = 'r8-no-short-clean';

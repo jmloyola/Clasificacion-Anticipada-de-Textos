@@ -26,16 +26,19 @@ clc;
 % nombreDataset = 'webkb-test-stemmed.txt';
 % nombreDataset = 'r8-test-all-terms-clean.txt';
 % nombreDataset = 'r8-train-all-terms-clean.txt';
-% nombreDataset = '20ng-train-stemmed.txt';
+nombreDataset = '20ng-train-stemmed.txt';
 % nombreDataset = '20ng-test-stemmed.txt';
-nombreDataset = 'test.txt';
+% nombreDataset = 'test.txt';
 
 %% Obtengo informacion para ubicar el dataset y abro el archivo donde se encuentra el dataset.
 % Obtengo el directorio actual sobre el que se esta corriendo el script.
 directorioActual = pwd;
 
+datadir = 'C:\Users\Juan Martin\Documents\GitHub\Clasificacion-Anticipada-de-Textos\Datasets\';
+
 indicePuntoNombreDataset = strfind(nombreDataset, '.');
-pathCompletoADataset = [directorioActual '\Datasets\'  nombreDataset]; % Esto permite concatenar las cadenas.
+%pathCompletoADataset = [directorioActual '\Datasets\'  nombreDataset]; % Esto permite concatenar las cadenas.
+pathCompletoADataset = [datadir nombreDataset]; % Esto permite concatenar las cadenas.
 
 identificadorEnteroDataset = fopen(pathCompletoADataset);
 

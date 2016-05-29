@@ -24,9 +24,9 @@ clc;
 % nombreDataset = 'webkb-test-stemmed';
 % nombreDataset = 'r8-test-all-terms-clean';
 % nombreDataset = 'r8-train-all-terms-clean';
-% nombreDataset = '20ng-train-stemmed';
+nombreDataset = '20ng-train-stemmed';
 % nombreDataset = '20ng-test-stemmed';
-nombreDataset = 'test';
+% nombreDataset = 'test';
 
 
 %% Obtengo informacion para ubicar los archivos '.mat' y cargo las variables donde se encuentra la informacion con la que se generan las graficas.
