@@ -10,12 +10,6 @@ directorioVariablesWorkspace = 'C:\Users\Juan Martin\Documents\GitHub\Clasificac
 pathMatrices = [directorioVariablesWorkspace nombreDataset '\' nombreDataset '_Matrices.mat'];
 load(pathMatrices);
 
-pathTerminosPorClase = [directorioVariablesWorkspace nombreDataset '\' nombreDataset '_TerminosPorClase.mat'];
-load(pathTerminosPorClase, 'indicesTerminosMasFrecPorClase');
-
-pathInformacionParcial = [directorioVariablesWorkspace nombreDataset '\' nombreDataset '_InfoDocumentosParciales.mat'];
-load(pathInformacionParcial, 'infoDocumentosParciales');
-
 classex=unique(Ytrain);
 
 YTones=-ones(size(Ytest,1),length(classex));
@@ -31,8 +25,9 @@ load(pathModeloEntrenamiento, 'NB');
 %% Realizo las predicciones incrementales (ventana a ventana)
 tamanioVentana = 1;
 valorInicial = 1;
-valorFinal = 100;
+valorFinal = 35;
 ventanas = valorInicial:tamanioVentana:valorFinal;
+%% ventanas(end+1) = cantidadMaximaTerminosTest; % La variable cantidadMaximaTerminosTest se encuentra en el .mat Matrices
 
 documentoTerminado = zeros(1,length(ventanas));
 
@@ -55,7 +50,7 @@ cantTipoTres = zeros(length(ventanas), 1);
 %% rXtest = zeros(size(DocumentosClase,1), size(Xtest,2));
 
 for j=1:length(ventanas),
-    %% j
+    j
     close all;
     rXtest = sparse(size(Xtest,1), size(Xtest,2));
     %% Simulo el conjunto de atributos disminuidos
@@ -65,13 +60,6 @@ for j=1:length(ventanas),
         documento = documento(find(documento));
         
         noz=length(documento);
-        %{
-        if (j==1)
-            if (noz <= 35)
-                noz
-            end
-        end
-        %}
         if (noz <= ventanas(j))
             ntermssf = noz;
             documentoTerminado(j) = documentoTerminado(j) + 1;
@@ -114,21 +102,17 @@ for j=1:length(ventanas),
     clear pred;
     close all; 
     f = figure('units','normalized','position',[.01 .01 .99 .99]);
-    %plot((ventanas(1:j)),lasefesnbm','LineWidth',2,'MarkerSize',10); %% plots f_1 measure
-	%plot((ventanas(1:j)),accNBMM','LineWidth',2,'MarkerSize',10); %% plots accuracy
-    subplot(3,1,1);
+    subplot(2,1,1);
     plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',1,'MarkerSize',8);
+    
     % Coloco el titulo a la figura. Notar que se usa cell, de esta forma creo
     % titulos con mas de una linea.
     %% titulo = {'Clasificacion Anticipada'; char(strcat({'Clase: '}, nombreClases(claseActual))); nombreDataset};
     titulo = {'Clasificacion Anticipada'; nombreDataset};
     title(titulo);
-    %legend('Macro F1', 'Accuracy', 'Location', 'southeast');
     legend('Macro F1', 'Accuracy','Location','eastoutside','Orientation','vertical');
     set(gca,'FontSize',11);
     xlabel('Cantidad de Terminos Leidos');
-	%ylabel('Accuracy'); 
-    %ylabel('Macro f_1 measure');
     ylabel('Porcentaje');
     set(gcf,'Color','w');
     grid;
@@ -177,8 +161,13 @@ for j=1:length(ventanas),
     
     
     %% Grafico el numero de terminos mas importantes de la clase indicada de cada documento.
-    subplot(3,1,2);
-    plot((ventanas(1:j)),[cantTipoUno(1:j)'; cantTipoDos(1:j)'; cantTipoTres(1:j)'],'LineWidth',1,'MarkerSize',8);
+    subplot(2,1,2);
+    %plot((ventanas(1:j)),[cantTipoUno(1:j)'; cantTipoDos(1:j)'; cantTipoTres(1:j)'],'LineWidth',1,'MarkerSize',8);
+    plot((ventanas(1:j)),cantTipoUno(1:j)','LineWidth',1,'MarkerSize',8);
+    hold on;
+    plot((ventanas(1:j)),cantTipoDos(1:j)','LineWidth',1,'MarkerSize',8);
+    plot((ventanas(1:j)),cantTipoTres(1:j)','LineWidth',1,'MarkerSize',8);
+    hold off;
 
     titulo = 'Cantidad de Documentos de Cada Tipo';
     title(titulo);
@@ -226,6 +215,18 @@ saveas(f, nombreFiguraSvg, 'svg');
 saveas(f, nombreFiguraEps, 'epsc'); % Guarda la figura en formato eps color.
 saveas(f, nombreFiguraPng, 'png');
 
+
+cd(directorioActual);
+
+directorioVariablesWorkspace = [directorioActual '\Variables del Workspace\' nombreDataset];
+if (exist(directorioVariablesWorkspace, 'dir') ~= 7)
+    mkdir(directorioVariablesWorkspace);
+end
+
+cd(directorioVariablesWorkspace);
+
+nombreArchivoSalida = [nombreDataset '_TipoDocumentos.mat'];
+save(nombreArchivoSalida, 'tipoDocumentos');
 
 cd(directorioActual);
 
