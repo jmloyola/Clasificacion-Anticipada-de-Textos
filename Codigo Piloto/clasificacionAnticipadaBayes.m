@@ -32,18 +32,24 @@ cd(directorioActual);
 
 %% Realizo las predicciones incrementales (ventana a ventana)
 tamanioVentana = 1;
-ventanas = 1:tamanioVentana:1001;
+ventanas = 1:tamanioVentana:100;
 %ventanas = 1:tamanioVentana:35;
-ventanas(end+1) = cantidadMaximaTerminosTest; %%% VER SI ESTA BIEN. INTENTO OBTENER LA CANTIDAD DE TERMINOS DEL DOCUMENTO MAS LARGO.
+ventanas(end+1) = size(sTest,2);
 %ventanas = 1:tamanioVentana:size(sTest,2);
 
 infoDocumentosParciales = cell(size(Xtest,1), length(ventanas));
+infoHistorica = cell(size(Xtest,1), length(ventanas));
+auxAverage = cell(size(Xtest,1), length(ventanas));
 indiceVentanas = zeros(size(Xtest,1), length(ventanas));
 probCadaClase = cell(size(Xtest,1), length(ventanas));
+clasePredicha = zeros(size(Xtest,1), length(ventanas));
 
 
 for j=1:length(ventanas),
     j
+    if ventanas(j) > 100
+        print j
+    end
     close all;
     rXtest=sparse(size(Xtest,1),size(Xtest,2));
     %% Simulo el conjunto de atributos disminuidos
@@ -80,11 +86,24 @@ for j=1:length(ventanas),
     %% Clasifico con Naive Bayes y estimo la performance 
     [NB0] = MNNaiveBayes(Xtestv,[],0,NB);
     
-    for i=1:size(Xtest,1)
-        probCadaClase{i,j} = NB0.Pr(i,:);
-    end    
+    if (j==1)
+        for i=1:size(Xtest,1)
+            probCadaClase{i,j} = NB0.Pr(i,:);
+            clasePredicha(i,j) = NB0.pred(i);
+            auxAverage{i,j} = NB0.Pr(i,:);
+            infoHistorica{i,j} = NB0.Pr(i,:); % Average probabilidad de cada clase.
+        end
+    else
+        for i=1:size(Xtest,1)
+            probCadaClase{i,j} = NB0.Pr(i,:);
+            clasePredicha(i,j) = NB0.pred(i);
+            auxAverage{i,j} = auxAverage{i,j-1} + NB0.Pr(i,:);
+            infoHistorica{i,j} = auxAverage{i,j} / j; % Average probabilidad de cada clase.
+        end
+    end
     
     pred=NB0.pred;
+    
     for i=1:length(classex),
         predtem=-ones(size(Ytest));
         predtem(find(pred==classex(i)))=1;
@@ -153,8 +172,10 @@ saveas(f, nombreFiguraPng, 'png');
 
 
 README{1} = 'En la variable infoDocumentosParciales se encuentra la informacion estatica de cada documento por cada una de las ventanas. Entre la informacion guardada se encuentra: numero de palabras total, numero de palabras sin considerar las que se encuentran en la BlackList, numero de palabras mas frecuentes de cada clase (vector).';
-README{2} = 'En la variable indiceVentanas se encuentran los indices que marcan hasta que punto se lee de cada documento a medida que la cantidad de ventanas aumenta.';
-README{3} = 'En la variable probCadaClase se encuentra la probabilidad que tiene cada clase para cada documento para la cantidad de ventenas leidas.';
+README{2} = 'En la variable infoHistorica se encuentra la informacion historica para los documentos.';
+README{3} = 'En la variable indiceVentanas se encuentran los indices que marcan hasta que punto se lee de cada documento a medida que la cantidad de ventanas aumenta.';
+README{4} = 'En la variable clasePredicha se encuentra la clase predicha por el clasificador.';
+README{5} = 'En la variable probCadaClase se encuentra la probabilidad que tiene cada clase para cada documento para la cantidad de ventenas leidas.';
 
 cd(directorioVariablesWorkspace);
 
@@ -163,7 +184,7 @@ nombreArchivoSalida = [nombreDataset '_ModeloEntrenado.mat'];
 save(nombreArchivoSalida, 'NB');
 
 nombreArchivoSalida = [nombreDataset '_InfoDocumentosParciales.mat'];
-save(nombreArchivoSalida, 'infoDocumentosParciales', 'indiceVentanas', 'probCadaClase', 'README');
+save(nombreArchivoSalida, 'infoDocumentosParciales', 'infoHistorica', 'indiceVentanas', 'clasePredicha', 'probCadaClase', 'README');
 
 cd(directorioActual);
 

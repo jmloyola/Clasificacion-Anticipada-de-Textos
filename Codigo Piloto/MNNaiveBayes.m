@@ -30,7 +30,7 @@ else
             
 %             Pr(j,i)=(log(NB.prior(i)))+sum(log((NB.P(:,i)').^X(j,:)));
             
-%             Pr(j,i)=(NB.prior(i)).*(prod((NB.P(ofin,i)').^X(j,ofin)));
+            %% Pr(j,i)=(NB.prior(i)).*(prod((NB.P(ofin,i)').^X(j,ofin)));
 
 
 %             Pr(j,i)=(factorial(length(ofin))).*(NB.prior(i)).*(prod(((NB.P(:,i)').^X(j,:))./factorial(X(j,:))));

@@ -23,11 +23,11 @@ pathModeloEntrenamiento = [directorioVariablesWorkspace nombreDataset '\' nombre
 load(pathModeloEntrenamiento, 'NB');
 
 %% Realizo las predicciones incrementales (ventana a ventana)
-tamanioVentana = 1;
-valorInicial = 1;
-valorFinal = 35;
+tamanioVentana = 5;
+valorInicial = 5;
+valorFinal = 300;
 ventanas = valorInicial:tamanioVentana:valorFinal;
-%% ventanas(end+1) = cantidadMaximaTerminosTest; % La variable cantidadMaximaTerminosTest se encuentra en el .mat Matrices
+ventanas(end+1) = cantidadMaximaTerminosTest; % La variable cantidadMaximaTerminosTest se encuentra en el .mat Matrices
 
 documentoTerminado = zeros(1,length(ventanas));
 
@@ -44,6 +44,8 @@ tipoDocumentos = zeros(size(Xtest,1),length(ventanas));
 cantTipoUno = zeros(length(ventanas), 1);
 cantTipoDos = zeros(length(ventanas), 1);
 cantTipoTres = zeros(length(ventanas), 1);
+
+cantClasesTipoUno = zeros(length(ventanas), length(classex));
 
 %% claseActual = 1
 %% DocumentosClase = sTest(find(Ytest==claseActual), :);
@@ -102,7 +104,7 @@ for j=1:length(ventanas),
     clear pred;
     close all; 
     f = figure('units','normalized','position',[.01 .01 .99 .99]);
-    subplot(2,1,1);
+    subplot(3,1,1);
     plot((ventanas(1:j)),[lasefesnbm; accNBMM]','LineWidth',1,'MarkerSize',8);
     
     % Coloco el titulo a la figura. Notar que se usa cell, de esta forma creo
@@ -127,6 +129,7 @@ for j=1:length(ventanas),
             if (NB0.pred(x) == claseDelDocumento)
                 tipoDocumentos(x,j) = 1;
                 cantTipoUno(j) = cantTipoUno(j) + 1;
+                cantClasesTipoUno(j,claseDelDocumento) = cantClasesTipoUno(j,claseDelDocumento) + 1;
             else
                 tipoDocumentos(x,j) = 3;
                 cantTipoTres(j) = cantTipoTres(j) + 1;
@@ -136,6 +139,7 @@ for j=1:length(ventanas),
                 if (NB0.pred(x) == claseDelDocumento)
                     tipoDocumentos(x,j) = 1;
                     cantTipoUno(j) = cantTipoUno(j) + 1;
+                    cantClasesTipoUno(j,claseDelDocumento) = cantClasesTipoUno(j,claseDelDocumento) + 1;
                 else
                     tipoDocumentos(x,j) = 2;
                     cantTipoDos(j) = cantTipoDos(j) + 1;
@@ -160,8 +164,8 @@ for j=1:length(ventanas),
     end
     
     
-    %% Grafico el numero de terminos mas importantes de la clase indicada de cada documento.
-    subplot(2,1,2);
+    %% Grafico la cantidad de documentos de cada tipo a medida que la ventana de terminos aumenta.
+    subplot(3,1,2);
     %plot((ventanas(1:j)),[cantTipoUno(1:j)'; cantTipoDos(1:j)'; cantTipoTres(1:j)'],'LineWidth',1,'MarkerSize',8);
     plot((ventanas(1:j)),cantTipoUno(1:j)','LineWidth',1,'MarkerSize',8);
     hold on;
@@ -172,6 +176,29 @@ for j=1:length(ventanas),
     titulo = 'Cantidad de Documentos de Cada Tipo';
     title(titulo);
     legend('Tipo 1', 'Tipo 2', 'Tipo 3','Location','eastoutside','Orientation','vertical');
+    set(gca,'FontSize',11);
+    xlabel('Cantidad de Terminos Leidos');
+    ylabel('Cantidad de Documentos');
+    set(gcf,'Color','w');
+    grid;
+    gcf;
+    box;
+    
+    
+    %% Grafico la cantidad de documentos de cada clase para los tipo 1 a medida que la ventana de terminos aumenta.
+    subplot(3,1,3);
+    plot((ventanas(1:j)),cantClasesTipoUno(1:j, 1)','LineWidth',1,'MarkerSize',8);
+    hold on;
+    for claseDoc=2 : length(classex)
+        plot((ventanas(1:j)),cantClasesTipoUno(1:j, claseDoc)','LineWidth',1,'MarkerSize',8);
+    end
+    hold off;
+
+    labels = 1:1:length(classex);
+
+    titulo = 'Cantidad de Cada Clase para Documentos Tipo Uno';
+    title(titulo);
+    legend(num2str(classex),'Location','eastoutside','Orientation','vertical');
     set(gca,'FontSize',11);
     xlabel('Cantidad de Terminos Leidos');
     ylabel('Cantidad de Documentos');

@@ -26,8 +26,8 @@ clc;
 % nombreDataset = 'webkb-test-stemmed.txt';
 % nombreDataset = 'r8-test-all-terms-clean.txt';
 % nombreDataset = 'r8-train-all-terms-clean.txt';
-nombreDataset = '20ng-train-stemmed.txt';
-% nombreDataset = '20ng-test-stemmed.txt';
+% nombreDataset = '20ng-train-stemmed.txt';
+nombreDataset = '20ng-test-stemmed.txt';
 % nombreDataset = 'test.txt';
 
 %% Obtengo informacion para ubicar el dataset y abro el archivo donde se encuentra el dataset.

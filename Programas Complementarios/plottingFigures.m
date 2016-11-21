@@ -24,8 +24,8 @@ clc;
 % nombreDataset = 'webkb-test-stemmed';
 % nombreDataset = 'r8-test-all-terms-clean';
 % nombreDataset = 'r8-train-all-terms-clean';
-nombreDataset = '20ng-train-stemmed';
-% nombreDataset = '20ng-test-stemmed';
+% nombreDataset = '20ng-train-stemmed';
+nombreDataset = '20ng-test-stemmed';
 % nombreDataset = 'test';
 
 

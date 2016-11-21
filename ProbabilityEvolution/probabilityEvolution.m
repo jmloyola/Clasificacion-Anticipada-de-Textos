@@ -31,7 +31,7 @@ load(pathModeloEntrenamiento, 'NB');
 %% Realizo las predicciones incrementales (ventana a ventana)
 tamanioVentana = 1;
 valorInicial = 1;
-valorFinal = 35;
+valorFinal = 50;
 ventanas = valorInicial:tamanioVentana:valorFinal;
 
 documentoTerminado = zeros(1,length(ventanas));
