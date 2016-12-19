@@ -176,6 +176,8 @@ README{2} = 'En la variable infoHistorica se encuentra la informacion historica 
 README{3} = 'En la variable indiceVentanas se encuentran los indices que marcan hasta que punto se lee de cada documento a medida que la cantidad de ventanas aumenta.';
 README{4} = 'En la variable clasePredicha se encuentra la clase predicha por el clasificador.';
 README{5} = 'En la variable probCadaClase se encuentra la probabilidad que tiene cada clase para cada documento para la cantidad de ventenas leidas.';
+README{6} = 'En la variable tamanioVentana se encuentra el tamaño de la ventana.';
+
 
 cd(directorioVariablesWorkspace);
 
@@ -184,7 +186,7 @@ nombreArchivoSalida = [nombreDataset '_ModeloEntrenado.mat'];
 save(nombreArchivoSalida, 'NB');
 
 nombreArchivoSalida = [nombreDataset '_InfoDocumentosParciales.mat'];
-save(nombreArchivoSalida, 'infoDocumentosParciales', 'infoHistorica', 'indiceVentanas', 'clasePredicha', 'probCadaClase', 'README');
+save(nombreArchivoSalida, 'infoDocumentosParciales', 'infoHistorica', 'indiceVentanas', 'clasePredicha', 'probCadaClase', 'tamanioVentana', 'README');
 
 cd(directorioActual);
 

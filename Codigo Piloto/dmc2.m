@@ -29,59 +29,81 @@ for i=1:length(classex),
     YTones(find(Ytest==classex(i)),i)=1;
 end
 
-cd(directorioActual);
 
 %% Parametros
 alfa = 2; % Lectura minima de ventanas.
 beta = 3; % Cantidad de ventanas de confirmacion.
-
-
-%% Genero dataset para dmc.
+porcentajeTrain = 0.60;
 cantidadDocumentos = size(infoHistorica,1);
 cantidadVentanas = size(infoHistorica,2);
-XtrainDMC = zeros(cantidadDocumentos * (cantidadVentanas-alfa+1) , (length(infoHistorica{1,1}) + 1 + length(probCadaClase{1,1}) + length(infoDocumentosParciales{1,1})));
-YtrainDMC = zeros(cantidadDocumentos * (cantidadVentanas-alfa+1) , 1);
-isForTraining = zeros(cantidadDocumentos, cantidadVentanas);
+isForTraining = zeros(cantidadDocumentos, 1);
 
-for i=1:cantidadDocumentos,
-    i
-    
-    for j=alfa:cantidadVentanas,
-        j
-        
-        indice = ((i-1) * (cantidadVentanas-alfa+1) + (j-alfa+1));
-        
-        isForTraining(i,j) = 1;
-        XtrainDMC(indice,:) = [infoHistorica{i,j}, j, probCadaClase{i,j}, infoDocumentosParciales{i,j}];
-        if clasePredicha(i,j) == Ytest(i)
-            YtrainDMC(indice) = 1;
-        else
-            YtrainDMC(indice) = -1;
-        end       
+nombreArchivo = [nombreDataset '_DMC_dataset.mat'];
+if (exist(nombreArchivo, 'file') ~= 2),
+    cantDocCadaClase = zeros(length(classex),1);
+    docCadaClase = {};
+    for i=1:length(classex),
+        cantDocCadaClase(i) = length(find(Ytest == i));
+        docCadaClase = [docCadaClase, find(Ytest == i)];
+        isForTraining(docCadaClase{1,i}(1:ceil(cantDocCadaClase(i)* porcentajeTrain))) = 1;
     end
+
+    %% Genero dataset para dmc.
+    XtrainDMC = [];
+    YtrainDMC = [];
+    XtestDMC = [];
+    YtestDMC = [];
+    numeroDocumento = [];
+
+    for i=1:cantidadDocumentos,
+        i
+
+        if (isForTraining(i)==1)
+            for j=alfa:cantidadVentanas,
+                j
+                XtrainDMC = [XtrainDMC; infoHistorica{i,j}, j, probCadaClase{i,j}, infoDocumentosParciales{i,j}];
+                if clasePredicha(i,j) == Ytest(i)
+                    YtrainDMC = [YtrainDMC; 1];
+                else
+                    YtrainDMC = [YtrainDMC; -1];
+                end
+            end
+        else
+            for j=alfa:cantidadVentanas,
+                j
+                XtestDMC = [XtestDMC; infoHistorica{i,j}, j, probCadaClase{i,j}, infoDocumentosParciales{i,j}];
+                numeroDocumento = [numeroDocumento, i];
+                if clasePredicha(i,j) == Ytest(i)
+                    YtestDMC = [YtestDMC; 1];
+                else
+                    YtestDMC = [YtestDMC; -1];
+                end
+            end
+        end
+    end
+
+
+    cd(directorioVariablesWorkspace);
+
+    nombreArchivoSalida = [nombreDataset '_DMC_dataset.mat'];
+    save(nombreArchivoSalida, 'XtrainDMC', 'YtrainDMC', 'XtestDMC', 'YtestDMC', 'numeroDocumento', 'isForTraining');
+
+else
+    load(nombreArchivo);
 end
+    
+cd(directorioActual);
 
-porcentajeTrain = 0.60;
-
-Xtrain = XtrainDMC(1:length(XtrainDMC)*porcentajeTrain, :);
-Xtest = XtrainDMC((length(XtrainDMC)*porcentajeTrain)+1 : end, :);
-%clear XtrainDMC
-
-Ytrain = YtrainDMC(1:length(YtrainDMC)*porcentajeTrain);
-Ytest = YtrainDMC((length(YtrainDMC)*porcentajeTrain)+1 : end);
-%clear YtrainDMC
-
-
-training_data = data(Xtrain, Ytrain);
+training_data = data(XtrainDMC, YtrainDMC);
 %clear Xtrain Ytrain
 
-test_data = data(Xtest, Ytest);
+test_data = data(XtestDMC, YtestDMC);
 %clear Xtest
 
-clop_model = neural;
+% clop_model = neural;
 % clop_model = kridge;
 % clop_model = naive;
-% clop_model = gentleboost;
+clop_model = gentleboost;
 % clop_model = j48;
 
 [training_resu, trained_model] = train(clop_model, training_data);
@@ -91,10 +113,6 @@ error_cost = 0;
 cantVen = (cantidadVentanas-alfa+1);
 cantDoc = ceil(length(Xtest) / cantVen);
 
-for i=1:cantDoc,
-    for j=1:cantVen,
-    end
-end
 
 %% error_cost = early_risk_detection_error(sign(test_resu.X), sign(test_resu.X), test_resu.Y, ventana);
 
@@ -113,7 +131,7 @@ qty = length(test_resu.X)
 qty_stop = length(find(sign(test_resu.X) == 1))
 qty_continue = length(find(sign(test_resu.X) == -1))
 
-[~,AUCv_refull,~, ~] = roc_2(round(test_resu.X), Ytest);
+%[~,AUCv_refull,~, ~] = roc_2(round(test_resu.X), YtestDMC);
 % [~,AUCv_refull,~, ~] = roc_2(test_resu.X, Ytest);
   
 accNBMM=(length(find((round(test_resu.X)-test_resu.Y)==0))./length(test_resu.Y)).*100
@@ -122,7 +140,7 @@ accNBMM=(length(find((round(test_resu.X)-test_resu.Y)==0))./length(test_resu.Y))
 cd(directorioVariablesWorkspace);
 
 nombreArchivoSalida = [nombreDataset '_DMC_' clop_model.name '.mat'];
-save(nombreArchivoSalida, 'training_resu', 'trained_model', 'test_resu', 'precision_measure_stop', 'recall_measure_stop', 'f1_measure_stop', 'precision_measure_continue', 'recall_measure_continue', 'f1_measure_continue');
+save(nombreArchivoSalida, 'training_resu', 'trained_model', 'test_resu', 'precision_measure_stop', 'recall_measure_stop', 'f1_measure_stop', 'precision_measure_continue', 'recall_measure_continue', 'f1_measure_continue', 'XtrainDMC', 'YtrainDMC', 'XtestDMC', 'YtestDMC', 'numeroDocumento');
 
 cd(directorioActual);
 
